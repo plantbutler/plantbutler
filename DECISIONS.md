@@ -5,7 +5,7 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
 
 ## 2026-08-30
 
-1. **Repositories.** A GitHub org `plant-butler` with one repository each for `firmware` (the
+1. **Repositories.** A GitHub org `plantbutler` (`plant-butler` was taken) with one repository each for `firmware` (the
    existing `jcanton/plant_butler`, transferred as-is — its history never held a secret), `backend`,
    `app`, `cad` and `plan`, pinned as submodules by this umbrella.
 

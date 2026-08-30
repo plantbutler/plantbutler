@@ -23,6 +23,6 @@ and why. Each pitch is one file — fields at the top, the shaping under it — 
 repository the pitch is about, once it is bet.
 
 ```bash
-git clone --recurse-submodules git@github.com:plant-butler/plant-butler.git
+git clone --recurse-submodules git@github.com:plantbutler/plantbutler.git
 cd plant-butler/plan && uv run --project ~/projects/openproj openproj check .
 ```

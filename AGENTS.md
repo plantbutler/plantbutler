@@ -45,14 +45,15 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
-**2026-08-30.** The org, the five repositories, the decisions and the plan exist; no product code
-has been written beyond the firmware prototype. Cycle 1 (2026-08-31 → review 2026-10-12) is
-software only because the hardware is out of reach until about mid-September: Jacopo holds "Org,
-repos, decisions, shopping list" (remaining: order the bench parts, pin the PlatformIO platform
-version in `firmware/platformio.ini`, revoke the old Gmail app password in the unpublished
-`../arduino` experiments) and "Readings up the wire"; Claude holds
-"Readings land on the NAS" and "Command hand-off". Starting either backend pitch needs access to
-the NAS (Container Manager or SSH); starting the firmware pitch needs the board on USB.
+**2026-08-30.** The org, the five repositories (plus `.github`), the decisions, the plan and an
+`AGENTS.md` in every repo exist; no product code has been written beyond the firmware prototype.
+Cycle 1 (2026-08-31 → review 2026-10-12) is software only because the hardware is out of reach
+until about mid-September. "Org, repos, decisions, shopping list" is `in_progress` with two items
+left — pin the PlatformIO platform version in `firmware/platformio.ini` (`renesas-ra@1.6.0` is
+installed) and order the bench parts; the old Gmail app password is revoked and gone. Jacopo then
+holds "Readings up the wire"; Claude holds "Readings land on the NAS" and "Command hand-off".
+Starting either backend pitch needs access to the NAS (Container Manager or SSH); starting the
+firmware pitch needs the board on USB.
 
 ## Conventions
 

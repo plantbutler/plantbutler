@@ -10,7 +10,7 @@ and eventually the NAS runbook.
 
 | repo       | what it is                                                                | state                     |
 | ---------- | ------------------------------------------------------------------------- | ------------------------- |
-| `firmware` | PlatformIO / Arduino UNO R4 WiFi: read sensors, report, water on command  | today's `jcanton/plant_butler`, to be transferred as-is |
+| `firmware` | PlatformIO / Arduino UNO R4 WiFi: read sensors, report, water on command  | the former `jcanton/plant_butler`, transferred as-is    |
 | `backend`  | one Python container + SQLite on the NAS: readings, pots, commands, rules | not started               |
 | `app`      | native Android, Kotlin + Jetpack Compose                                  | not started               |
 | `cad`      | OpenSCAD parts, KiCad wiring diagram, BOM, bench notes                    | not started               |

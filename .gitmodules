@@ -10,3 +10,6 @@
 [submodule "cad"]
 	path = cad
 	url = git@github.com:plantbutler/cad.git
+[submodule "firmware"]
+	path = firmware
+	url = git@github.com:plantbutler/firmware.git

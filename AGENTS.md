@@ -26,7 +26,7 @@ The repositories, all under the GitHub org `plantbutler` and pinned here as subm
 | `backend`  | one Python container + SQLite on the NAS                          | README only         |
 | `app`      | Kotlin + Jetpack Compose                                          | README only         |
 | `cad`      | OpenSCAD, KiCad, BOM, bench notes                                 | README only         |
-| `plan`     | the openproj plan                                                 | 15 pitches, cycle 1 bet |
+| `plan`     | the openproj plan                                                 | 16 pitches, cycle 1 bet |
 
 Locally the umbrella is `~/projects/plant-butler/` with the submodules checked out inside it; the
 firmware also has an older standalone checkout at `~/projects/plant_butler/` pointing at the same
@@ -48,8 +48,9 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 **2026-08-30.** The org, the five repositories, the decisions and the plan exist; no product code
 has been written beyond the firmware prototype. Cycle 1 (2026-08-31 → review 2026-10-12) is
 software only because the hardware is out of reach until about mid-September: Jacopo holds "Org,
-repos, decisions, shopping list" (remaining: order the bench parts, revoke the old Gmail app
-password in the unpublished `../arduino` experiments) and "Readings up the wire"; Claude holds
+repos, decisions, shopping list" (remaining: order the bench parts, pin the PlatformIO platform
+version in `firmware/platformio.ini`, revoke the old Gmail app password in the unpublished
+`../arduino` experiments) and "Readings up the wire"; Claude holds
 "Readings land on the NAS" and "Command hand-off". Starting either backend pitch needs access to
 the NAS (Container Manager or SSH); starting the firmware pitch needs the board on USB.
 
@@ -66,8 +67,7 @@ the NAS (Container Manager or SSH); starting the firmware pitch needs the board 
   token and the app's server URL live in untracked local files or environment. Nothing in this
   system is ever port-forwarded on the synology.me host.
 - **Failure direction is dry.** Any change to firmware or backend keeps the invariants in
-  DECISIONS.md #5 and #7: bounded doses, pump off on boot/error/unknown position/empty float,
-  no watering without a fresh heartbeat.
+  DECISIONS.md #5 and #7.
 - **Names.** Record ids are random; refer to records by title in prose. The org is `plantbutler`
   (`plant-butler` was taken); the local directory is still `plant-butler`.
 - **Submodules.** After pushing in a subrepository, `git add <subrepo>` here and push the pointer,

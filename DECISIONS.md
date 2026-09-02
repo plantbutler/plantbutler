@@ -41,3 +41,20 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
    driver that is off unless the MCU actively asserts it; a float switch both in the driver circuit
    and on a sense pin; a reservoir small enough that a full dump is a mop-up; a watchdog. Unattended
    automation is gated on the interlock pitch.
+
+## 2026-09-02
+
+8. **Hardware is OpenSCAD, parametric, printed flat.** Every part lives as OpenSCAD source in
+   `cad/`, every dimension derived from one parameter file with asserts; the FreeCAD assembly
+   (valveV2) is kept as read-only reference, not edited. Chosen because the FreeCAD spreadsheet
+   parametrics did not derive cleanly, because text renders headless and diffs, and because the
+   owner and the agent both need to see sections, not trust them. Every part prints on the
+   Bambu P2S with one flat face on the bed and no supports.
+
+9. **The manifold mechanism.** A continuous-rotation SG90 turns an M3 lead screw through two
+   spur gears outboard of the servo plate; a cart with a ø6×3 magnet rides on the lid and lifts
+   one gate at a time; a gate is an 8 mm 440C ball on an O-ring seat in a cage, lifted enough
+   that the throat under it passes `lift_factor` × the outlet bore area; the cart nut is
+   captured; the lid and caps are bonded. Positioning is hall pulse counting on the screw plus
+   the threadless home (decided in July, kept). Magnetized spheres, nail poppets and a rotary
+   distributor were rejected.

@@ -4,7 +4,7 @@ Read this first, whichever repository you landed in. It is the org-wide guide; e
 its own short `AGENTS.md` for the tooling and state that are specific to it.
 
 Plant Butler is a hobby plant-watering system: an Arduino UNO R4 WiFi with one capacitive
-soil-moisture sensor per pot and a pump feeding a servo-driven rotary manifold; a small Python
+soil-moisture sensor per pot and a pump feeding a lead-screw manifold (a servo moves a magnet cart that lifts one gate at a time); a small Python
 backend on a Synology NAS that stores readings and decides when to water; an Android app to look
 at the plants and water them by hand. Two workers: Jacopo (`jcanton`) and Claude (`claude`), a day
 a week between them. Everything is deliberately small.

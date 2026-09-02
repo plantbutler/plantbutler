@@ -1,7 +1,7 @@
 # Plant Butler
 
 A plant-watering system: an Arduino UNO R4 WiFi with one capacitive soil-moisture sensor per pot
-and a pump feeding a rotary manifold, a small backend on the Synology NAS that stores the readings
+and a pump feeding a lead-screw manifold (a servo moves a magnet cart that lifts one gate at a time), a small backend on the Synology NAS that stores the readings
 and decides when to water, and an Android app to look at the plants and water them by hand.
 
 This is the umbrella repository. It holds no code: it pins the five repositories below as

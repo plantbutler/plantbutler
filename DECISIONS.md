@@ -92,3 +92,47 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     refuse. The easier arrangement — a free float and a hall low in the tank — was rejected
     because it can only see "empty", which makes permission the passive state that every broken
     sensor also reports.
+
+13. **The bench firmware is one sketch with two seams and one door to the pump.** `hal.h` and
+    `link.h` are the only two boundaries: exactly one translation unit includes `<Arduino.h>`,
+    names a pin, owns an ISR or writes the pump line, and exactly one names WiFiS3. Everything
+    else compiles and is tested on the host. `dose_run()` is the only caller that writes the pump
+    pin, with the cap three lines above the assert and no `return` between the ON and the OFF
+    write; `safety_tick()` re-asserts the pump's rest state and only then feeds the watchdog, so
+    the dog cannot be fed without the pin having just been put back where it belongs. The
+    fake-hardware mode is a different file chosen at link time rather than a runtime flag, so the
+    file that names the pump pin is not compiled into it. A handful of greps in `make check` turn
+    those invariants into build failures instead of conventions.
+
+    Three things this settles that were previously assumed. The wiring README's recipe
+    `digitalWrite(D6, OFF); pinMode(D6, OUTPUT)` is **wrong for this silicon**: the core's
+    `pinMode` is a whole-register write that discards the preceding level, so on an active-LOW
+    relay module it would assert the pump at every boot. Direction and level go in one
+    `R_IOPORT_PinCfg` call. The bring-up console ships in its **own binary**; `pump`, `prime`,
+    `hang` and `cal` are compiled out of the one left running unattended. And `pos=unknown` is
+    forced by a constant that ships defined, so the backend's watering rules stay dark until
+    flipping it is a deliberate act after the 48-hour run.
+
+    What the board runs is the core's **WDT**, not the IWDT that decision #10 and the wiring
+    README both promise: the Arduino core exposes no other, the granted window is 5592 ms, and
+    `status` says which dog is running. The real IWDT needs a flash option byte that can lock the
+    board out of USB uploads, so it is its own piece of work with a proven DFU recovery path as
+    its first deliverable.
+
+14. **The float is checked by three independent witnesses, and a refusal refuses watering only.**
+    The mounting is the first (decision #12): permission is the active state, so every electrical
+    failure reads as refuse. It cannot catch a magnet that has come off the float and stuck to the
+    hall's housing, which reads "full" forever on an empty tank. So there are two more. The flow
+    meter is the witness for *right now*: a dose that the float permitted and that produced no
+    flow at all means two sensors contradict each other, and the board latches watering off until
+    a human clears it at the console — a kinked hose latches too, and that is intended, because
+    the latch refuses rather than diagnoses. The human refill log is the witness over *time*: a
+    refill is an act the board cannot observe, so only the backend can tell a float that has not
+    moved in a month from one that is stuck, and only the backend's own latch survives a board
+    reset. The board's whole contribution there is one reported number, seconds since the float
+    last changed state, and it never refuses on staleness.
+
+    A refusal stops a dose and nothing else. No latch stops a sensor read, a report, a retry, an
+    ack or a screen. A latch is reached exactly when the backend most needs data — it is how the
+    phone learns there is a problem — and a board that stopped reporting would look identical to a
+    board that had died.

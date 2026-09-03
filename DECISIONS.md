@@ -58,3 +58,37 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
    captured; the lid and caps are bonded. Positioning is hall pulse counting on the screw plus
    the threadless home (decided in July, kept). Magnetized spheres, nail poppets and a rotary
    distributor were rejected.
+
+## 2026-09-03
+
+10. **The bench electronics use the parts in hand, and the interlock moves into firmware.**
+    A one-channel relay module switches the pump's 12 V + leg: a de-energised coil is an open
+    contact, so reset, boot, a pulled jumper and lost power all leave the pump off in hardware.
+    No MOSFET, no 74HC00, no flyback diode (the module carries its own coil diode and the
+    contacts take the motor's kick as an arc). No UBEC either: the UNO R4's ISL854102 buck gives
+    1.2 A total from VIN, enough for the servo and the coil on the board's own 5 V pin, provided
+    the board is fed from the barrel jack rather than a USB port and C1 (470-1000 µF) sits at
+    the servo's plug. One 5 V rail.
+
+    The cost is explicit: nothing in hardware now ANDs "firmware says pump" with "the tank has
+    water", so a sketch that hangs with the pump pin asserted keeps pumping. Three firmware
+    measures stand in for the gate and all three are mandatory — the RA4M1 IWDT enabled, a hard
+    maximum run time in the same code path that asserts the pin, and a no-flow abort from the
+    meter. The hardware gate returns with "Don't flood the flat" when the parts arrive.
+
+11. **Signals go where their type belongs, not where the expansion story is tidiest.** Analog
+    and slow (moisture, light) on the analog mux, 16 a piece. A level and slow (the manifold's
+    home hall) on the I2C expander. A counted pulse train (the screw hall, the flow meter) on an
+    interrupt pin, because a mux sitting on another channel when the edge arrives loses the
+    count, and a lost screw edge is lost cart position. Timed one-wire (DHT11) and a servo's
+    50 Hz train on direct pins. The float, the input that refuses a dose, takes the shortest
+    path there is: a direct pin. Past three manifolds the screw halls route through a 74HC4051
+    into one interrupt pin (only one manifold moves at a time) and the servos onto a PCA9685.
+
+12. **The float is mounted so that "allowed" is the active state.** A stop caps the float's
+    upward travel at the trip level and the hall sits at that stop, so for any level above the
+    line the float is held against it and its magnet is at the sensor. Magnet present therefore
+    means water above the line, and a dead, unplugged, unpowered or cut-off hall reads as
+    refuse. The easier arrangement — a free float and a hall low in the tank — was rejected
+    because it can only see "empty", which makes permission the passive state that every broken
+    sensor also reports.

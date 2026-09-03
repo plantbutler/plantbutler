@@ -53,11 +53,18 @@ wiring lives in `pot_mappings` with a validity window, and it carries a `species
 16. "The watering history": `GET /doses` and a screen for it, backend 0.9.0. That one also turned
 up a defect older than itself — disabling a pot never closed its mapping window, so two pots could
 hold one hose and a dose could belong to both, which had been quietly corrupting cooldown and
-daily-cap attribution. Fixed in the mapping write.
+daily-cap attribution. Fixed in the mapping write. "Look further back": day, week and month chips
+on the chart with a scrub, plus paging on the history. And "A create is not an edit", a pitch made
+on the spot: an id-less `POST /pot` used to edit whatever pot already had that name, so a new pot
+made against a stale list could silently overwrite one. The backend is 0.11.0 and deployed.
 
-The remaining four are, in order: longer chart windows, something to look at off the tailnet, a
-median of three in the calibration wizard, and the species care lookup (still shaping — it needs a
-spike on which care APIs are actually alive).
+The app has been driven on the phone once, against a laptop backend with a fake board: a pot
+created, renamed, watered, and read back in both histories. The rename is what the identity pitch
+was for — three days ago the app could not do it at all.
+
+The remaining two are: something to look at off the tailnet, and a median of three in the
+calibration wizard; then the species care lookup, still shaping, which needs a spike on which care
+APIs are actually alive.
 
 The hardware is still out of reach until about mid-September, so the two firmware pitches wait.
 

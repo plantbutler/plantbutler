@@ -62,9 +62,15 @@ The app has been driven on the phone once, against a laptop backend with a fake 
 created, renamed, watered, and read back in both histories. The rename is what the identity pitch
 was for — three days ago the app could not do it at all.
 
-The remaining two are: something to look at off the tailnet, and a median of three in the
-calibration wizard; then the species care lookup, still shaping, which needs a spike on which care
-APIs are actually alive.
+"Something to look at off the tailnet" and "Three samples, not one" are done too, so five of the
+six second-pass pitches are, plus the one made on the spot.
+
+The sixth, "What does this plant want?", is **blocked and stays shaping**. The care APIs were
+re-probed on 2026-09-03: Perenual and Trefle both answer and both want an API key, OpenFarm's API
+is gone (it redirects to its GitHub repo now), and GBIF does the taxonomy hop for free with no key
+at all. Keys never enter a repository, so nothing can call a care source until Jacopo has signed
+up for one. The taxonomy hop, the cache, the regime-to-band mapping and the type-it-in fallback
+need no key and could be built first.
 
 The hardware is still out of reach until about mid-September, so the two firmware pitches wait.
 

@@ -45,6 +45,17 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
+**2026-09-03.** Cycle 1's four backend pitches and the three app pitches are done and deployed;
+the backend is 0.8.0 on the NAS, the app is a debug APK on the phone. A second pass on the app is
+underway under two new projects, "App, second pass" and "The butler knows the plant". Its first
+pitch, "A pot has an identity", is done: a pot is now a `pot-xxxxxx` id rather than its name, its
+wiring lives in `pot_mappings` with a validity window, and it carries a `species` — see decision
+16. The remaining five are, in order: the watering history, longer chart windows, something to
+look at off the tailnet, a median of three in the calibration wizard, and the species care
+lookup (still shaping — it needs a spike on which care APIs are actually alive).
+
+The hardware is still out of reach until about mid-September, so the two firmware pitches wait.
+
 **2026-08-30.** The org, the five repositories (plus `.github`), the decisions, the plan and an
 `AGENTS.md` in every repo exist; no product code has been written beyond the firmware prototype.
 Cycle 1 (2026-08-31 → review 2026-10-12) is software only because the hardware is out of reach

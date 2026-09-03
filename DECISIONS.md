@@ -136,3 +136,17 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     ack or a screen. A latch is reached exactly when the backend most needs data — it is how the
     phone learns there is a problem — and a board that stopped reporting would look identical to a
     board that had died.
+
+15. **The bench keeps both screens, so #6's "A4 becomes channel 5" is superseded.** Decision #6
+    dropped the OLED and the LCD as debugging aids and freed A4 for a fifth channel. The bench rig
+    keeps both: standing next to a pump you want to read what the board thinks without a laptop
+    attached, and the channel they were costing is no longer theirs to cost — A4/A5 are the I2C bus
+    that carries the mux select lines and the home hall, and the five channels arrive through the
+    mux on A0. Both screens sit on that same bus at 0x3C and 0x27, alongside the expander at 0x20.
+
+    Keeping them is not free and the price is paid in the one place it matters. Every screen paint
+    is bus traffic on the wire the mux select lines and the home hall depend on, and one 16-character
+    LCD row costs 96 Wire transactions; so neither screen is painted while the pump pin is asserted,
+    and the refresh cadence is deliberately coarse. Any library added to this bus has to be checked
+    for `Wire.flush()`, which spins without a bound and would hang a dose. The rest of #6 stands:
+    raw counts on the wire, identity and calibration in the backend, 14-bit picked once.

@@ -150,3 +150,32 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     and the refresh cadence is deliberately coarse. Any library added to this bus has to be checked
     for `Wire.flush()`, which spins without a bound and would hang a dose. The rest of #6 stands:
     raw counts on the wire, identity and calibration in the backend, 14-bit picked once.
+
+16. **A pot is an id, not a name, and its wiring is something that happened over time.** Every pot
+    gets a random `pot-3f9a21` that never changes, so the name becomes a nickname the app can edit
+    and renaming is a field edit rather than disable-and-recreate. The controller, channel and
+    outlet leave the pots table for `pot_mappings`: one row per period a pot spent on a given
+    wiring, the open row (`to_ts IS NULL`) being where it hangs now. A view `pots_now` joins the
+    two and hands every existing reader the column shape it already expected, so moving the wiring
+    out cost one word at each of six call sites rather than a join apiece. `species` arrives in the
+    same rebuild because the table was open anyway, and it is what the care lookup will key on.
+
+    Two prices, both paid deliberately. SQLite cannot retype a primary key in place, so this is a
+    one-time rebuild and therefore the single declared exception to `schema.sql`'s additive-only
+    header — a function, not a framework: atomic, idempotent, announcing on stderr what it did, and
+    leaving `<db>.pre-identity.bak` behind. That backup is taken after a `wal_checkpoint(TRUNCATE)`,
+    because the live database runs in WAL mode and a plain file copy would preserve everything
+    except the commits most at risk; if another connection holds the log open, the rebuild refuses
+    rather than copy a short backup. And a dose now belongs to the pot that held that hose when the
+    board was handed it, not to whoever hangs there now — which repaired a verdict log that was
+    quietly filing one pot's judgement against another pot's dose, in the table that is meant to be
+    the dataset adaptive dosing will one day fit on.
+
+    What the second of those cost, and the correction, because it is the more useful half of this
+    entry. Keying the cooldown and daily-cap gates to the pot made both depend on attribution
+    succeeding, and a dose the lookup could not place read as "never watered" rather than "wait".
+    That is fail-open, against #5, and it needed no exotic state to reach: prime a line by hand,
+    then register the pot that hangs on it, and the rules queue a second dose into a pot that was
+    watered a minute ago. The gates are now a union — the pot-keyed lookup with the old hose-keyed
+    one underneath it as a floor — so a dose nobody can attribute still refuses. An unattributable
+    dose is evidence that water came out, and evidence that water came out is a reason to wait.

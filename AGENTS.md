@@ -47,12 +47,17 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 **2026-09-03.** Cycle 1's four backend pitches and the three app pitches are done and deployed;
 the backend is 0.8.0 on the NAS, the app is a debug APK on the phone. A second pass on the app is
-underway under two new projects, "App, second pass" and "The butler knows the plant". Its first
-pitch, "A pot has an identity", is done: a pot is now a `pot-xxxxxx` id rather than its name, its
+underway under two new projects, "App, second pass" and "The butler knows the plant". Two of its
+six pitches are done. "A pot has an identity": a pot is now a `pot-xxxxxx` id rather than its name, its
 wiring lives in `pot_mappings` with a validity window, and it carries a `species` — see decision
-16. The remaining five are, in order: the watering history, longer chart windows, something to
-look at off the tailnet, a median of three in the calibration wizard, and the species care
-lookup (still shaping — it needs a spike on which care APIs are actually alive).
+16. "The watering history": `GET /doses` and a screen for it, backend 0.9.0. That one also turned
+up a defect older than itself — disabling a pot never closed its mapping window, so two pots could
+hold one hose and a dose could belong to both, which had been quietly corrupting cooldown and
+daily-cap attribution. Fixed in the mapping write.
+
+The remaining four are, in order: longer chart windows, something to look at off the tailnet, a
+median of three in the calibration wizard, and the species care lookup (still shaping — it needs a
+spike on which care APIs are actually alive).
 
 The hardware is still out of reach until about mid-September, so the two firmware pitches wait.
 

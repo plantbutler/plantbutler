@@ -45,12 +45,19 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
-**2026-09-04, later.** Both queued ideas are built, merged and deployed, and neither is tested on
-a phone — adb is off at Jacopo's end. The two pitches stay `in_progress` for that reason: "Where
-is the butler?" (backend#17, app#12) and "A picture of the plant, over time" (backend#19, app#13),
-with the review fixes in backend#19 and app#12/#13 and the deploy in backend#20. Decisions 19 and
-20 record what they settled. **The backend is 0.14.0 on the NAS**, verified over the tailnet
-against a garden that is still empty.
+**2026-09-04, later.** Both queued ideas are built, merged, deployed and driven on the phone, and
+both pitches are `done`: "Where is the butler?" (backend#17, app#12) and "A picture of the plant,
+over time" (backend#19, app#13), with the deploy in backend#20. Decisions 19 and 20 record what
+they settled. **The backend is 0.14.0 on the NAS.** The real garden is still empty — the hardware
+is out of reach — so the photographs were driven against a laptop backend the phone was pointed at
+through the new setup screen, which tested the repointing as a side effect.
+
+What the phone proved that no test could. The three sentences told the three mistakes apart
+against real services: a wrong token on the NAS, a dead port, and the NAS's own web UI on 5000.
+A camera round trip came back 1200x1600 and upright at 306 KB — the EXIF rotation is the one that
+had to be right, because re-encoding drops the tag and there is no editing here to fix it with
+afterwards. The species break appeared only where the species actually changed. And moving the
+phone to the laptop and back never showed one butler's garden under the other's name.
 
 Three reviewers went over the four PRs and found twelve defects between them, all fixed before
 merging. The two worth remembering: a photograph whose id collided with an existing one overwrote

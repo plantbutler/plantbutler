@@ -45,6 +45,22 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
+**2026-09-04, later still.** The pot form was next, and it turned out to hide a defect rather than
+just read badly. `plant_type` was free text keyword-matched against eight words while being the
+only thing that picks the base moisture band, so `plant_type=basil` looked saved, matched nothing,
+and left the pot on the unlabelled 35-55 with nothing on screen to say so. `pot_size` was matched
+on the words *small* and *large* alone, so `14cm` — the README's own example — and the `"3"` in
+the live garden moved the band by nothing; `plant_size` was read by nothing at all.
+
+So: an ⓘ beside every field opening one sentence, a closed set of six plant kinds plus *not sure*,
+and the two sizes as measurements the band reads as a water buffer and the demand on it — the
+shift being linear in the *log* of the volume, since a 40 cm pot holds 23x a 14 cm one. A species
+lookup now pre-selects the kind from GBIF's family, into an empty field only, which is the first
+time a species has reached a watering number at all. Decisions 21-23; pitch "The form says what it
+means"; backend#21, app#14, plan#16. **The backend is 0.15.0 on the NAS**, and the migration was
+its own proof: `add_columns()` carried the live garden's `"10"` and `"3"` across, and that pot's
+offer went from `flower` to `flower, 3 cm pot, 10 cm plant`.
+
 **2026-09-04, later.** Both queued ideas are built, merged, deployed and driven on the phone, and
 both pitches are `done`: "Where is the butler?" (backend#17, app#12) and "A picture of the plant,
 over time" (backend#19, app#13), with the deploy in backend#20. Decisions 19 and 20 record what

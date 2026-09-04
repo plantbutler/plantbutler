@@ -179,3 +179,27 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     watered a minute ago. The gates are now a union — the pot-keyed lookup with the old hose-keyed
     one underneath it as a floor — so a dose nobody can attribute still refuses. An unattributable
     dose is evidence that water came out, and evidence that water came out is a reason to wait.
+
+17. **The board refuses a command id it has already seen, which makes "nothing deletes a command
+    row" a backend obligation.** The firmware keeps `cmd_high_water` in the `.noinit` struct that
+    survives a warm reset and refuses any `cmd=` at or below it. The failure it exists for is
+    specific: a response body left over from an earlier round trip — exactly what a poisoned AT
+    session produces — would otherwise run the same dose a second time, and the second ack lands
+    on a row no longer `state='sent'`, so the UPDATE is a silent no-op. The cooldown and the daily
+    cap never see the second dose, and the plant gets twice the water with nothing raised anywhere.
+
+    That guard rests entirely on command ids never being reused. `commands.id` is
+    `INTEGER PRIMARY KEY` with no `AUTOINCREMENT`, so SQLite hands out the largest rowid ever used
+    plus one — and after a delete, that is a number it has handed out before. Nothing in
+    `butler.py` deletes from `commands` today, so the guard holds. The day something prunes that
+    table, a new command can be issued with an id already burned, and the board will refuse it, and
+    keep refusing, because the high-water mark only rises. The direction of the failure is right —
+    a refused dose, not a double one — but it is silent, and the board will look healthy while
+    ignoring every command.
+
+    So the table is append-only by decision, not by accident: trimming history means copying rows
+    out to an archive, never `DELETE`. The same applies to a rebuild of the kind #16 sanctions for
+    `pots` — a rebuild that lets SQLite reassign command ids breaks this guard exactly as a delete
+    does, so it must carry the ids across unchanged. If append-only ever becomes inconvenient,
+    `AUTOINCREMENT` goes on the column *before* the first delete, not after: adding it later does
+    not recover the ids already reused.

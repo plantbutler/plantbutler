@@ -325,3 +325,95 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     and is the whole trap: SQLite creates a view without checking that its columns exist, so the
     ALTERs must run *before* the script, or a perfectly successful startup is followed by every
     single read failing.
+
+## 2026-09-05
+
+24. **A pot has a status, not a switch, and the graveyard is what unwires it.** `pots.enabled`
+    becomes `pots.status`, a closed set of `alive` and `graveyard` shaped so a third word — paused
+    but still wired, say — is one entry plus one label. Every reader asks a positive allow-list
+    (`butler.waters`, `butler.live_sql`) and never `!= 'graveyard'`, so a status a newer backend
+    invents waters nothing, proposes nothing and pages about nothing in an older reader. Failure
+    direction is dry, and that applies to words as well as to readings.
+
+    Burying a pot CLOSES its open `pot_mappings` window, which is what actually frees the channel
+    and the outlet; it also expires the pot's open proposals and drops its `sensor:` and
+    `proposal:` alerts. That last one is not tidiness: both the raise and the clear for
+    `sensor:<c>:<ch>` live inside a loop over the live pots, so a pot that leaves the loop while
+    its alarm stands leaves a row nothing can ever clear, sitting in `/health` and inflating the
+    daily up-probe count for good.
+
+    This overturns the note under decision 16 that a disabled pot "does not unplug it". That was
+    true and was the bug: the window stayed open, so a disabled pot still held a hose it was not
+    using, and the displacement backstop existed only to clean up after it. Restoring a pot leaves
+    it unwired, because the plant that comes back is not in the socket the old one left.
+
+25. **A pot can be erased, and the command log is no longer never-pruned.** `POST /pot/delete`
+    removes a pot, its wiring, its readings, its doses and their verdicts, its dismissed advice
+    and its photographs with their files. Its own route rather than a field on `POST /pot`, for
+    the reason `/photo/delete` is: a save that lost its body must never become an erasure.
+
+    It overturns `schema.sql`'s "rows are never deleted" for `commands`. That rule was written
+    against pruning, not against an owner asking for a plant to be gone, and the cost is real and
+    named here rather than discovered: a deleted pot's doses stop floating the hose-keyed cooldown
+    and daily-cap floors, so the next pot on that hose can be watered sooner than decision 5 would
+    like, for up to a day.
+
+    The order inside the transaction is forced by reachability — there are no foreign keys in this
+    database and nothing cascades — and two of its steps are correctness rather than housekeeping.
+    `commands.id` is a rowid alias with no `AUTOINCREMENT`, so SQLite hands the same ids out
+    again: a leftover `verdicts` row would label a stranger's dose, and a leftover `dose:<id>`
+    alert would make the judgement loop skip a real dose for ever on its `NOT EXISTS` guard. Both
+    must be deleted through the commands they are found by, so both go first. The photograph files
+    are unlinked only after the commit, and the pot's directory with `rmdir` rather than `rmtree`,
+    because the directory is not the truth and a tree delete would take bytes belonging to rows
+    the transaction never saw.
+
+26. **Attribution is stamped, not derived.** `readings.pot_id` and `commands.pot_id` are written
+    as the row lands, from the `pot_mappings` window in force at that moment, and `GET /history`
+    takes a pot rather than a channel. This is what stops a plant wired into a dead one's socket
+    opening its chart on somebody else's moisture curve — the case the whole pitch exists for.
+
+    It is a reversal of half of decision 6, and only half. Percentages stay derived: recalibrating
+    still re-reads the whole history. Attribution does not, and the price is that a mis-typed
+    channel corrected later leaves its readings stamped with the mistake, where the window join
+    would have re-attributed them. That was judged worth it — a wrong socket is caught in minutes,
+    a chart quietly showing a dead plant's soil is not caught at all.
+
+    `pot_mappings` is demoted from "the join that answers whose dose it was" to "the source the
+    stamp is read from, and the record of which sensor a pot was on". The dose judgement still
+    reads it for the channel, because the pot may have been rewired between the dose and the soak
+    and the rise belongs to the probe that was in that soil at the time — a different question
+    from whose dose it was, and it was only ever answered by accident that the same join did both.
+
+    What stays keyed on the hose stays, and is now load-bearing for a second reason: the board is
+    handed an outlet and not a pot, a proposal is fenced to whoever is on that hose now, and both
+    watering floors count what went down a hose whoever it was attributed to. A command whose
+    stamp is NULL — a hose no pot was on — is invisible to every pot-keyed gate and visible to
+    those floors, which is the only thing keeping decision 5 true for it.
+
+    One divergence, recorded rather than fixed: a proposal made for a pot, then the pot is
+    rewired, then the stale proposal is approved and handed down the old hose, is stamped with the
+    pot it was made for. The read-time join would have called it the new occupant's. It is safe in
+    the dry direction because the hose floors still see it.
+
+27. **Twelve plant kinds, seven soils, and free text is gone from the band engine.** The kinds go
+    from six to twelve, all with distinct bands: a cactus leaves `succulent` because 5 points is
+    the difference between a barrel cactus and an echeveria, and Orchidaceae stops being the
+    deliberate omission of decision 22 now that there is a band for a bark epiphyte to have.
+
+    Soil becomes a closed set too, refused on write like the kind, and only the seven values that
+    actually move the band are in it. An ordinary potting mix is deliberately absent: it is what
+    the plant kinds are written against, so "not said" and "the bag from the shop" are the same
+    answer, and a list of movers stays a list of movers. Every ceiling shift is `<= 0` and that is
+    an invariant, not an accident — the band only ever widens downwards, so a soil that raised the
+    ceiling above the plant's own base would contradict the reason printed beside it.
+
+    `_find` goes with them, and its three rules with it: the word-start prefix that kept a
+    cauliflower from being a flower, the negation rule that made "not sandy" not sandy, and the
+    phrase-as-reason that printed the user's own words when they were short enough. Each of them
+    was a wrong answer free text had produced. A closed set cannot be misspelled, so the rules
+    that survived misspellings have nothing left to do — recorded here because the code that
+    explained why they existed goes with them.
+
+    Reading stays tolerant in both fields, as it was for the kind: a row still holding free text
+    reads fine and simply shifts nothing.

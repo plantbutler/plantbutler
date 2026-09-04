@@ -45,6 +45,31 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
+**2026-09-05.** A plant can die, and until today the app had no way to say so. The only lever was
+an `enabled` switch that turned the proposals off and left the pot wired — its mapping window
+stayed open, so a hose it was not using still belonged to it, and reusing that outlet meant typing
+over the dead plant's row and inheriting its name, its photographs and its watering log.
+
+`pots.enabled` is now `pots.status`, `alive` or `graveyard`, read through a positive allow-list
+everywhere. Burying a pot closes its mapping window — which is what actually frees the channel and
+the outlet — expires its proposals, and drops the `sensor:` alert that nothing else could ever
+clear once the pot left the loop that raises it. Restoring leaves it unwired. `POST /pot/delete`
+is the other half and keeps nothing: the pot, its wiring, its readings, its doses and their
+verdicts, its dismissed advice and its photographs with their files. In the app the first is a
+long press on a garden row and the second is a button at the foot of the form behind a dialog that
+names the plant and lists what goes.
+
+The bigger change is underneath. `readings` and `commands` now carry `pot_id`, stamped as the row
+lands from the window in force, and the chart asks `GET /history?pot=`. Before this a new plant on
+a dead one's socket opened its chart onto the dead one's moisture curve, because a reading knew
+only which channel it came from. That is a reversal of half of decision 6 — percentages stay
+derived, attribution no longer is — and decisions 24 to 27 say what it cost.
+
+Kind of plant went from six values to twelve and soil became a closed set of the seven that move
+the band, both refused on write and both dropdowns in the app; `_find` and its three keyword rules
+are deleted. Backend 0.16.0, 427 tests; app 310. The live database was recreated rather than
+migrated, which is also what finally removed the fake Legos pot.
+
 **2026-09-04, later still.** The pot form was next, and it turned out to hide a defect rather than
 just read badly. `plant_type` was free text keyword-matched against eight words while being the
 only thing that picks the base moisture band, so `plant_type=basil` looked saved, matched nothing,

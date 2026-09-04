@@ -65,12 +65,18 @@ was for — three days ago the app could not do it at all.
 "Something to look at off the tailnet" and "Three samples, not one" are done too, so five of the
 six second-pass pitches are, plus the one made on the spot.
 
-The sixth, "What does this plant want?", is **blocked and stays shaping**. The care APIs were
-re-probed on 2026-09-03: Perenual and Trefle both answer and both want an API key, OpenFarm's API
-is gone (it redirects to its GitHub repo now), and GBIF does the taxonomy hop for free with no key
-at all. Keys never enter a repository, so nothing can call a care source until Jacopo has signed
-up for one. The taxonomy hop, the cache, the regime-to-band mapping and the type-it-in fallback
-need no key and could be built first.
+All five were then driven on the phone (2026-09-04) against a laptop backend and a fake board: the
+chart's day/week/month chips and its scrub, the watering history paging on its cursor, the offline
+cache cold-started with the backend killed, and the calibration wizard's three-sample capture with
+its arm-and-restore. Two things only showed up on hardware and were fixed there.
+
+The sixth, "What does this plant want?", is unblocked and reshaped. Probed with real keys on
+2026-09-04: **Perenual's free tier is names only** — every care field is an upgrade string and the
+detail endpoints answer 429 — and **Trefle answers with light, humidity and pH but has no watering
+regime at all** (`soil_humidity` empty across every species sampled, and houseplants empty or
+absent entirely). OpenFarm's API is gone; GBIF does the taxonomy hop free. Jacopo's call: Perenual
+is out, no ranking and no fallback chain, Trefle is the one online source and otherwise the numbers
+are typed in. The watering band was never going to come from a care API and now says so.
 
 The hardware is still out of reach until about mid-September, so the two firmware pitches wait.
 

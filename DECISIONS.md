@@ -417,3 +417,27 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
 
     Reading stays tolerant in both fields, as it was for the kind: a row still holding free text
     reads fine and simply shifts nothing.
+
+28. **The controller is an integer, and board 0 is a real board.** `c=` was the last free-text
+    identifier on the wire, and the one a typo could turn into a whole second garden: a report
+    from `bench1 ` or `Bench1` opens its own row in `controllers`, its own heartbeat and its own
+    alerts, and nothing anywhere says the two are the same board. It is `0..255` now
+    (`MAX_CONTROLLER`), in every parser and every column, and the firmware's `PB_CONTROLLER` is an
+    integer asserted into that range at compile time.
+
+    The half worth writing down is board **0**. It is falsy in Python and in Kotlin, and it is the
+    number a new pot's form fills in, so `if not controller` refuses the commonest board there is
+    — with "no c= in the report", which is the least helpful message it could have picked. Every
+    check is `is None`, and every one of them has a test that fails without it. The same rule
+    reaches the app: nothing tests a controller for truth, and `boardName()` is the single place
+    that turns the number into "board 0" for a person, because a bare "0 has gone silent" reads
+    like a truncated sentence.
+
+    The database had to be recreated rather than migrated, and not for tidiness: `CREATE TABLE IF
+    NOT EXISTS` cannot retype a column (decision 23), so the old TEXT affinity would have stored
+    the integer as `'0'` and answered `/pots` a JSON *string* — which the app, with `isLenient`
+    off, refuses to decode into an `Int`, failing the whole garden fetch rather than one field.
+    Comparisons would have kept working, which is what makes it the bad kind of bug.
+
+    What did NOT change: the alert keys still embed the controller as text (`silent:0`), because a
+    key is a string and always was, and the app reads those keys rather than parsing them.

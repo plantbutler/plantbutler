@@ -45,6 +45,20 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
+**2026-09-05, later.** The controller is an integer now, 0..255, across all three repositories —
+`c=` was the last free-text identifier on the wire and the one a typo could turn into a second
+garden. Board 0 is a real board and is falsy, which is decision 28's whole point: four `if not
+controller` checks in the backend would have refused the commonest board there is. The firmware
+moved with it, and the session working on the bench sketch caught the one thing no compiler could
+— `test_cli.cpp` hardcoded `"bench1"` independently of the macro, so it would have kept passing
+while asserting a shape that can no longer exist. That change is `plantbutler/firmware#1`, open
+against `bench-sketch` rather than main, because all 104 of that branch's commits touch the same
+files.
+
+The garden list also shows each pot's newest photograph beside its name. Backend 0.17.0 is
+deployed; its database was recreated again, because `CREATE TABLE IF NOT EXISTS` cannot retype a
+column and TEXT affinity would have answered the app a string where it now expects a number.
+
 **2026-09-05.** A plant can die, and until today the app had no way to say so. The only lever was
 an `enabled` switch that turned the proposals off and left the pot wired — its mapping window
 stayed open, so a hose it was not using still belonged to it, and reusing that outlet meant typing

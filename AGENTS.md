@@ -45,6 +45,30 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
+**2026-09-04, later.** Both queued ideas are built and neither is tested. adb is off at Jacopo's
+end, so the two pitches are `in_progress` with the code written, reviewed and PRs open: "Where is
+the butler?" (backend#17, app#12) and "A picture of the plant, over time" (backend#18, app#13).
+Decisions 19 and 20 record what they settled. The backend is 0.14.0 in the branches and still
+0.12.0 on the NAS.
+
+The app no longer has the address or the token compiled into it: it asks on first start, proves
+both with a real `GET /hello`, and keeps them in the phone's encrypted store, so one APK installs
+on a second phone and a moved NAS is a typed line. `butler.properties` is now optional and only
+prefills that screen for a development build. `GET /hello` had to exist because nothing else could
+tell a wrong address from a wrong token — which are different mistakes and only one of them is the
+user's to fix.
+
+A pot also keeps its own photographs now: a strip under the chart, oldest first, with the care
+source's picture of the species beside them as the reference. The bytes live under `BUTLER_PHOTOS`
+next to the database and the row is the truth, which is what decides the direction a crash or a
+half-restored backup fails in. The phone caps the long edge at 1600 before it uploads, and turns
+the picture upright from EXIF first — a phone writes the sensor's orientation into a tag rather
+than into the pixels, and re-encoding drops it, so without that every portrait photograph would
+have come back on its side for good.
+
+What is untested is exactly what only a device has: the camera, and a first start with nothing
+stored. Both wait for adb.
+
 **2026-09-04.** The second pass is finished. "What does this plant want?" was the last of its
 pitches and it is done: backend 0.12.0 on the NAS, the app on the phone, and decision 18 recording
 what it settled. `GET /species` resolves what somebody typed through GBIF and asks Trefle about the
@@ -64,8 +88,9 @@ and humidity 5/10, the saved species read its care back out of the cache with no
 Apply wrote 35-50% and the offer went quiet, and Not now silenced monstera's until a repot made it
 a different offer (35-55%, "tropical, large pot").
 
-Two ideas are queued and not bet: photographs of your own plants filed under the pot id, and
-asking where the backend is on first start instead of compiling it into the APK.
+Two ideas were queued and not bet at that point: photographs of your own plants filed under the
+pot id, and asking where the backend is on first start instead of compiling it into the APK. Both
+were built later the same day — see the entry above.
 
 The hardware is still out of reach, so the two firmware pitches wait.
 

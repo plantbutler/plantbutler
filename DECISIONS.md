@@ -211,3 +211,52 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
 
     Numbered 18 and not 17: another session has 17 in an open PR, and a gap is cheaper than a
     collision.
+
+19. **The address and the token belong to the device, not to the build.** The app asks where the
+    butler is on first start, proves the answer with a real call, and keeps it in the phone's
+    encrypted store; a settings screen changes it later. `butler.properties` survives only as the
+    default a development build prefills that screen with, and the build no longer requires it, so
+    an APK built without it carries no token at all. That is the point rather than a convenience:
+    every artifact ever produced had the token inside it, a second phone needed a rebuild, and a
+    moved NAS needed a new build.
+
+    Proving it needed a new route. Nothing that existed could tell a wrong address from a wrong
+    token: the reads are ungated and answer a wrong token exactly as they answer a right one, and
+    every gated route writes something. So backend 0.13.0 has `GET /hello` — token-gated, touching
+    no database, answering `butler=<version>`. Probing authentication with a deliberately invalid
+    write would have worked today and broken silently the day a route checked its body before its
+    token, and touching no database means a butler whose volume came unmounted can still say the
+    token was wrong.
+
+    Those are different mistakes, only one of them is the user's to fix, and saying which is most
+    of what the screen is for. Two rules fall out of the same place: a scheme the user did not type
+    becomes http and never https, because the NAS is plain HTTP on the tailnet and cleartext has
+    to keep working; and the offline cache belongs to one butler, so it is cleared on a repoint
+    *and* stamped with the address it came from, since a delete that failed would otherwise show
+    one server's garden under another's name. The rabbit hole about the client no longer being
+    built once at start-up has a second half nobody wrote down: an answer already in the air from
+    the old address. Every request now runs under one cancellable job, and repointing drops it.
+
+20. **A photograph's row is the truth; its bytes are only bytes.** Pictures of a plant hang off the
+    pot id, one file per row under `BUTLER_PHOTOS` beside the database so the two are backed up or
+    lost together. A picture is listed, served and deleted by its row, and the directory is never
+    read to decide what exists.
+
+    That is what settles the only genuinely hard question here, which is what a crash or a
+    half-restored backup is allowed to leave behind. A file no row knows about is invisible and
+    harmless. A row whose file has gone cannot be hidden, so it is reported as missing rather than
+    served as an image that will not load. Keeping a picture therefore writes the file and then
+    the row; deleting one removes the row and then the file. Both orders leave the harmless
+    direction, and deleting favours the person's intent over the volume's cooperation.
+
+    Two smaller things worth fixing in writing. These four routes are the only gated *reads* the
+    backend has — everything else here is numbers about plants, and a photograph is the one thing
+    that could show the inside of a house. And the phone caps the long edge at 1600 and re-encodes
+    before it uploads, which is the difference between a decade of weekly pictures being a couple
+    of hundred megabytes and a couple of dozen gigabytes on a NAS volume that was never sized for
+    either.
+
+    A pot outlives its plant. Rather than invent a replant event, each row carries the species the
+    pot had that day, and the strip draws the break where it changed — which is honest about what
+    it cannot see: basil replanted with basil leaves no trace, and neither does a plant that was
+    never named.

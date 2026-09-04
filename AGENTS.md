@@ -45,11 +45,20 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
-**2026-09-04, later.** Both queued ideas are built and neither is tested. adb is off at Jacopo's
-end, so the two pitches are `in_progress` with the code written, reviewed and PRs open: "Where is
-the butler?" (backend#17, app#12) and "A picture of the plant, over time" (backend#18, app#13).
-Decisions 19 and 20 record what they settled. The backend is 0.14.0 in the branches and still
-0.12.0 on the NAS.
+**2026-09-04, later.** Both queued ideas are built, merged and deployed, and neither is tested on
+a phone — adb is off at Jacopo's end. The two pitches stay `in_progress` for that reason: "Where
+is the butler?" (backend#17, app#12) and "A picture of the plant, over time" (backend#19, app#13),
+with the review fixes in backend#19 and app#12/#13 and the deploy in backend#20. Decisions 19 and
+20 record what they settled. **The backend is 0.14.0 on the NAS**, verified over the tailnet
+against a garden that is still empty.
+
+Three reviewers went over the four PRs and found twelve defects between them, all fixed before
+merging. The two worth remembering: a photograph whose id collided with an existing one overwrote
+that picture's bytes before the INSERT could object, leaving a committed row pointing at nothing
+(ids are claimed with O_EXCL now); and the setup screen could print the token it was refusing,
+because OkHttp quotes an illegal header value back in its exception message and that message went
+straight onto the screen. Three of the twelve were comments that lied about the code, and two of
+those had a real bug sitting behind them.
 
 The app no longer has the address or the token compiled into it: it asks on first start, proves
 both with a real `GET /hello`, and keeps them in the phone's encrypted store, so one APK installs

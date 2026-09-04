@@ -179,3 +179,35 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     watered a minute ago. The gates are now a union — the pot-keyed lookup with the old hose-keyed
     one underneath it as a floor — so a dose nobody can attribute still refuses. An unattributable
     dose is evidence that water came out, and evidence that water came out is a reason to wait.
+
+## 2026-09-04
+
+18. **One online care source, no ranking, and no watering number from any of it.** Trefle is the
+    only service asked about a plant, with GBIF in front of it to turn what somebody typed into
+    the accepted binomial. There is no second source and no fallback chain: if Trefle is offline
+    or has never heard of the plant, the numbers are typed in, and that is a working path rather
+    than a degraded one. The earlier ranking that put Perenual first was made from documentation
+    and is overturned — with a real key its free tier answers `cycle`, `watering` and `sunlight`
+    with the literal string "Upgrade Plans To Premium/Supreme… I'm sorry".
+
+    The part worth keeping is what the probe found about Trefle itself. It carries no watering
+    regime at all: `soil_humidity` was NULL for every species asked, houseplants and crops alike.
+    So the target moisture band cannot come from a care source and never could. It is proposed
+    locally, from what is actually on hand — the kind of plant, the soil, the pot size and the
+    month — and it arrives as an offer. Accepting one is an ordinary `POST /pot`, which is what
+    keeps "no watering number without a human approving it" literally true rather than merely
+    intended. A refusal is remembered against the numbers refused, so a repot or a change of
+    season is a new question and is asked again.
+
+    Two consequences worth stating outright. Our percentage is a straight line between dry air and
+    tap water, not volumetric water content, so no published figure could be copied into it even
+    if a source had one — a care source gives regimes and context, and the numbers stay local.
+    And for the plants this system is actually for, the answer is usually a picture and a name:
+    Monstera deliciosa, Dracaena trifasciata and Chlorophytum comosum all resolve with every
+    growth field empty. Which is why the lookup ended up being a search with photographs rather
+    than a table of numbers — GBIF knows scientific names only, so a common name, another
+    language or a typo falls to Trefle's own search, and what confirms the plant is that you
+    recognise it.
+
+    Numbered 18 and not 17: another session has 17 in an open PR, and a gap is cheaper than a
+    collision.

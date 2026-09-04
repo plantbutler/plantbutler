@@ -45,6 +45,31 @@ remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects
 
 ## Where we are
 
+**2026-09-04.** The second pass is finished. "What does this plant want?" was the last of its
+pitches and it is done: backend 0.12.0 on the NAS, the app on the phone, and decision 18 recording
+what it settled. `GET /species` resolves what somebody typed through GBIF and asks Trefle about the
+accepted binomial; both hops are cached, so the garden screen never touches the network. GBIF knows
+scientific names only, so "basil", "basilico", "tomatoe" and "peace lily" fall to Trefle's own
+search, which matches common names, survives a typo, and answers with photographs — and the
+photograph is what confirms the plant, because "peace lily" is two species and no spelling settles
+which one is on the windowsill.
+
+No watering number comes from any of it. Trefle carries no watering regime (`soil_humidity` NULL
+for every species probed), so the target band is proposed locally from plant type, soil, pot size
+and month, and it arrives as an offer with Apply and Not now. Applying it is an ordinary pot edit.
+
+Driven on the phone against a laptop backend with a fake board: `basilico` returned eight
+photographs, tapping Basil filled the field and re-resolved to *Ocimum basilicum* with light 7/10
+and humidity 5/10, the saved species read its care back out of the cache with no second call,
+Apply wrote 35-50% and the offer went quiet, and Not now silenced monstera's until a repot made it
+a different offer (35-55%, "tropical, large pot").
+
+Two ideas are queued and not bet: photographs of your own plants filed under the pot id, and
+asking where the backend is on first start instead of compiling it into the APK.
+
+The hardware is still out of reach, so the two firmware pitches wait.
+
+
 **2026-09-03.** Cycle 1's four backend pitches and the three app pitches are done and deployed;
 the backend is 0.8.0 on the NAS, the app is a debug APK on the phone. A second pass on the app is
 underway under two new projects, "App, second pass" and "The butler knows the plant". Two of its

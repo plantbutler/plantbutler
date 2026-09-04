@@ -260,3 +260,68 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     pot had that day, and the strip draws the break where it changed — which is honest about what
     it cannot see: basil replanted with basil leaves no trace, and neither does a plant that was
     never named.
+
+21. **A pot's size is a measurement, and the shift it earns is the log of the volume.** The two
+    size fields were free text and neither did what its name promised. `pot_size` was matched on
+    the words *small* and *large* alone, so `14cm` — the README's own example, and the `"3"` a
+    real pot was created with — moved the band by nothing at all; `plant_size` was read by
+    nothing whatsoever. They are now `pot_diameter_cm` and `plant_height_cm`, REAL, and the pot is
+    read as what it physically is: a water store.
+
+    Volume goes as the cube of the diameter, and the temptation is to make the shift cubic too.
+    That is wrong by a wide margin — a 40 cm pot holds 23× the water of a 14 cm one, and no
+    percentage band survives being multiplied by 23. What is linear in percentage points is the
+    *log* of the volume: each doubling of buffer moves the band one step, 2.5 points, so the cube
+    survives as the factor of three in `log2((d/14)**3)`. That lands 10 cm at +4 on the floor and
+    24 cm at −6 on both ends, which is where the old *small* and *large* keywords sat, and gives
+    every size between them an answer for the first time. It saturates at three doublings — a
+    28 cm pot and a 60 cm one get the same shift — which is not a claim that they want the same
+    water but an admission of where a table of six plant kinds stops being worth extrapolating.
+
+    Height is read *over* diameter and never on its own, because 40 cm of basil is thirsty in a
+    10 cm pot and comfortable in a 30 cm one: it is demand against that buffer. Both effects move
+    the floor; only a big pot moves the ceiling, and downwards. Nothing lifts a ceiling, because
+    no container is a reason to keep a plant wetter than its own kind wants — the same direction
+    #5 asks for.
+
+22. **The kind of plant is a closed set, and a lookup may pre-select it.** `plant_type` was free
+    text keyword-matched against eight words while being the only thing that picks the base band:
+    an unlabelled plant starts at 35–55%, a succulent at 15–30%. So `plant_type=basil` was saved,
+    matched nothing, and cost twenty points with nothing on screen to say so — the one failure
+    mode a form should never have. It is now one of six kinds, refused on write and still tolerated
+    on read, because rows written before the set existed must stay readable and the base band is
+    the honest reading of one. *Not sure* stays a real answer with a real band; it is the correct
+    state for a cutting somebody handed you.
+
+    That closed set is also the door through which a species finally reaches a watering number.
+    Decision 18 stands — no care source carries a regime and none ever sets a band — but GBIF's
+    reply already contains the botanical family, free and keyless, and family maps onto these six
+    kinds well enough to open the dropdown pre-selected. It is a guess and is treated as one: it
+    fills the field only while the field is empty, and one tap changes it. Wrong costs a tap;
+    silent costs twenty points.
+
+    Genus is asked before family, because family is wrong exactly where it matters — Asparagaceae
+    holds *Dracaena fragrans*, a leafy thing that wants watering, and *Dracaena trifasciata*, a
+    succulent in all but name. Orchids are left unguessed on purpose: an epiphyte on bark waters
+    nothing like a flowering pot plant, and falling through to *not sure* beats twenty confident
+    points in the wrong direction.
+
+23. **`schema.sql` stays additive, but `CREATE TABLE IF NOT EXISTS` is not.** It is additive about
+    *tables*: a column appended to a CREATE that has already run never reaches an existing
+    database, and the table quietly keeps the shape it was born with while every fresh one gets
+    the new shape. That is how two of these fields would have gone out working perfectly in the
+    tests and not at all on the NAS.
+
+    So a new column goes in the CREATE *and* in `butler.ADDED_COLUMNS`, which ALTERs in whatever a
+    given database has not got yet, and may carry a value over from an old column — `"14cm"` and
+    `"10"` came across as measurements, `"small"` was dropped rather than invented into
+    centimetres. Deliberately an ALTER and not a second rebuild: the one rebuild this project has
+    (`migrate`, decision 16) stays the only one. Nothing is ever dropped, so a rollback to the
+    previous container still reads every pot it wrote.
+
+    `pots_now` is the exception that proves it: dropped and recreated on every start, because a
+    view holds no data — it is derived, like a percentage — and `IF NOT EXISTS` would leave an
+    older database serving the old shape forever with nothing to say it had. The ordering matters
+    and is the whole trap: SQLite creates a view without checking that its columns exist, so the
+    ALTERs must run *before* the script, or a perfectly successful startup is followed by every
+    single read failing.

@@ -441,3 +441,21 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
 
     What did NOT change: the alert keys still embed the controller as text (`silent:0`), because a
     key is a string and always was, and the app reads those keys rather than parsing them.
+
+29. **The dose ceiling is one number in two places, and the backend latches on the board's word,
+    not on an empty float.** `MAX_DOSE_ML` in butler.py is 250, the firmware's
+    `PB_DOSE_RIG_MAX_ML`, refused at `POST /command` and at pot save; the board keeps its own copy
+    as the backstop (#5), and the two move together. A backend that accepted 1000 against a board
+    that refuses above 250 queued a dose that was refused, acked with nothing, cooled down and paged
+    high, once per cooldown, forever — and never watered. Per-controller ceilings wait for a second
+    kind of rig.
+
+    The firmware's contradiction latch lives in `.noinit` and a power cycle erases it, so the
+    backend holds the durable half: it latches on `ch207=1` or `err=contra`, and on `err=resetmid`,
+    and stays latched — the rules go dry and `POST /command` refuses water — until `POST /resume`
+    from the app, beside the words "type `clear contra` on the board". The float going empty does
+    not latch: the rules already refuse on `float=0`, a float that goes 0 → 1 across a refill is
+    demonstrably moving, and the refill button is the human event for an empty tank. A refill that
+    the float does not move across is what pages instead (`ch204` against the refill log). And the
+    daily cap charges acked water only: a lost response is likelier than a lost ack — the board never
+    retries once response bytes arrived — and the cooldown still spaces the doses.

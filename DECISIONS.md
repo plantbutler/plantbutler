@@ -451,11 +451,15 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     kind of rig.
 
     The firmware's contradiction latch lives in `.noinit` and a power cycle erases it, so the
-    backend holds the durable half: it latches on `ch207=1` or `err=contra`, and on `err=resetmid`,
+    backend holds the durable half: it latches on `ch207=1`, and on `err=` *changing to* `resetmid`,
     and stays latched — the rules go dry and `POST /command` refuses water — until `POST /resume`
-    from the app, beside the words "type `clear contra` on the board". The float going empty does
-    not latch: the rules already refuse on `float=0`, a float that goes 0 → 1 across a refill is
-    demonstrably moving, and the refill button is the human event for an empty tank. A refill that
-    the float does not move across is what pages instead (`ch204` against the refill log). And the
-    daily cap charges acked water only: a lost response is likelier than a lost ack — the board never
-    retries once response bytes arrived — and the cooldown still spaces the doses.
+    from the app, beside the words "type `clear contra` on the board". Not on `err=contra`: `err=`
+    is the board's sticky last error, repeated on every report, and `clear contra` clears only the
+    flag `ch207` reflects, so a latch on the token would re-latch forever after the human did
+    everything right. The float going empty does not latch either: the rules already refuse on
+    `float=0`, a float that goes 0 → 1 across a refill is demonstrably moving, and the refill button
+    is the human event for an empty tank. A refill that the float does not move across is what pages
+    instead (`ch204` against the refill log, with ten minutes of slack before the tap, because a
+    person pours first and taps second). And the daily cap charges acked water only: a lost response
+    is likelier than a lost ack — the board never retries once response bytes arrived — and the
+    cooldown still spaces the doses.

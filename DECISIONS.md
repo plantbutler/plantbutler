@@ -474,12 +474,15 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     against a clock.** The float is one bit at the low line, and a person who tops up daily never
     lets it move; the 0.18.0 rule in #29 presumed a float stuck three minutes after a "refilled"
     tap it did not move across, which stopped the automatic watering after every top-up. Now the
-    backend counts acked water since the last tap, and the tank's size is what the meter counted
-    between a tap and the float going empty — the median of the last five such runs, armed after
-    two. A float still saying full with more than 110 % of that pumped is presumed stuck: the
+    backend counts acked water since the last tap — or since the float last rose, when that is
+    later: a refill nobody tapped is still a float that moved — and the tank's size is what the
+    meter counted between a tap and the float going empty — the median of the last five such
+    runs, armed after two. A contra report closes no sample: zero pulses is a dead meter or a
+    kinked tube as often as an empty tank. A float still saying full with more than 110 % of that pumped is presumed stuck: the
     rules go dry and the phone is paged, and the next tap is the clear, because a person who
-    tapped looked at the tank. A float still saying empty three minutes after a tap made while it
-    read empty is presumed dead: a page only, since the rules are dry on empty already. Every
+    tapped looked at the tank. A float still saying empty in a reading three minutes after a tap
+    made while it read empty is presumed dead, or the board's own float check has tripped: a page
+    only, naming both, since the rules are dry on empty already. Every
     measured run is announced, and a run more than a quarter off the known size is announced as a
     warning: a different tank, a clogging meter, or a tap that was not a fill. The tap means
     "full to the top", and the app says so. Nothing changes on the board: it already sends

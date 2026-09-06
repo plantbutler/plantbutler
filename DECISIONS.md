@@ -467,3 +467,22 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     person pours first and taps second). And the daily cap charges acked water only: a lost response
     is likelier than a lost ack — the board never retries once response bytes arrived — and the
     cooldown still spaces the doses.
+
+## 2026-09-06
+
+30. **The tank's size is measured by the meter, and the float is judged against it, never
+    against a clock.** The float is one bit at the low line, and a person who tops up daily never
+    lets it move; the 0.18.0 rule in #29 presumed a float stuck three minutes after a "refilled"
+    tap it did not move across, which stopped the automatic watering after every top-up. Now the
+    backend counts acked water since the last tap, and the tank's size is what the meter counted
+    between a tap and the float going empty — the median of the last five such runs, armed after
+    two. A float still saying full with more than 110 % of that pumped is presumed stuck: the
+    rules go dry and the phone is paged, and the next tap is the clear, because a person who
+    tapped looked at the tank. A float still saying empty three minutes after a tap made while it
+    read empty is presumed dead: a page only, since the rules are dry on empty already. Every
+    measured run is announced, and a run more than a quarter off the known size is announced as a
+    warning: a different tank, a clogging meter, or a tap that was not a fill. The tap means
+    "full to the top", and the app says so. Nothing changes on the board: it already sends
+    `float=` and `flow_ml=`, which is #5 kept. Manual water from the phone is still not gated: a
+    human is at the phone, the board's own float check runs, and the no-flow abort is beneath
+    both.

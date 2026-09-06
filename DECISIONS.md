@@ -34,8 +34,9 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
    `(controller, channel)` raw counts and accepts a valve index; the backend maps channel → valve →
    pot → plant, so repotting is an edit. Two calibration numbers per channel, editable from the app;
    percentages are derived at read time and never stored, so recalibration reinterprets history
-   instead of losing it. The two I2C screens are dropped (they were debugging aids; A4 becomes
-   channel 5), ADC resolution is picked once (14-bit).
+   instead of losing it. *Superseded by #15 (2026-09-05 marker):* ~~the two I2C screens are dropped
+   (they were debugging aids; A4 becomes channel 5)~~ — the bench keeps both screens, A4/A5 are the
+   I2C bus, and the five channels arrive through the mux on A0. ADC resolution is picked once (14-bit).
 
 7. **Safety is layered and fails dry.** Actuators on their own supply with a common ground; a
    driver that is off unless the MCU actively asserts it; a float switch both in the driver circuit
@@ -72,9 +73,12 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
 
     The cost is explicit: nothing in hardware now ANDs "firmware says pump" with "the tank has
     water", so a sketch that hangs with the pump pin asserted keeps pumping. Three firmware
-    measures stand in for the gate and all three are mandatory — the RA4M1 IWDT enabled, a hard
-    maximum run time in the same code path that asserts the pin, and a no-flow abort from the
-    meter. The hardware gate returns with "Don't flood the flat" when the parts arrive.
+    measures stand in for the gate and all three are mandatory — a watchdog (*superseded by #13,
+    2026-09-05 marker:* ~~the RA4M1 IWDT enabled~~ — the firmware ships the core's WDT, granted
+    window 5592 ms, and `status` says which dog is running; the true IWDT is its own piece of
+    work), a hard maximum run time in the same code path that asserts the pin, and a no-flow
+    abort from the meter. The hardware gate returns with "Don't flood the flat" when the parts
+    arrive.
 
 11. **Signals go where their type belongs, not where the expansion story is tidiest.** Analog
     and slow (moisture, light) on the analog mux, 16 a piece. A level and slow (the manifold's

@@ -5,7 +5,7 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
 
 ## Index
 
-An index only. The entries below stay as written; the notes column is the one place a later reversal is recorded next to the original. Number 17 is reserved for a decision open in another branch.
+An index only. The entries below stay as written; the notes column is the one place a later reversal is recorded next to the original. Number 17 was reserved for a decision that never landed; its subject is 32.
 
 | # | date | title | notes |
 | --- | --- | --- | --- |
@@ -32,13 +32,14 @@ An index only. The entries below stay as written; the notes column is the one pl
 | 22 | 2026-09-04 | The kind of plant is a closed set, and a lookup may pre-select it | part reversed by 27 |
 | 23 | 2026-09-04 | `schema.sql` stays additive, but `CREATE TABLE IF NOT EXISTS` is not |  |
 | 24 | 2026-09-05 | A pot has a status, not a switch, and the graveyard is what unwires it | reverses part of 16 |
-| 25 | 2026-09-05 | A pot can be erased, and the command log is no longer never-pruned |  |
+| 25 | 2026-09-05 | A pot can be erased, and the command log is no longer never-pruned | `AUTOINCREMENT` clause corrected by 32 |
 | 26 | 2026-09-05 | Attribution is stamped, not derived | reverses part of 6 |
 | 27 | 2026-09-05 | Twelve plant kinds, seven soils, and free text is gone from the band engine | reverses part of 22 |
 | 28 | 2026-09-05 | The controller is an integer, and board 0 is a real board |  |
 | 29 | 2026-09-05 | The dose ceiling is one number in two places, and the backend latches on the board's word, not on an empty float | parts reversed by 30 and 31 |
 | 30 | 2026-09-06 | The tank's size is measured by the meter, and the float is judged against it, never against a clock | reverses part of 29 |
 | 31 | 2026-09-06 | The board's three latches are on the wire, and the backend latches on levels | reverses part of 29 |
+| 32 | 2026-09-07 | A command id only ever rises, so it may never be reissued or rewound | corrects part of 25 |
 
 ## 2026-08-30
 
@@ -542,3 +543,26 @@ An index only. The entries below stay as written; the notes column is the one pl
     flap or refuses again. The tap is the human saying full; the board re-checks. Nothing about
     the tank's counter or samples changes. Changed now because no board runs this firmware yet:
     after bring-up a wire change costs a reflash and a compatibility story.
+
+## 2026-09-07
+
+32. **A command id only ever rises, so it may never be reissued or rewound.** The board keeps
+    `cmd_high_water`, the highest id it has ever accepted, in the `.noinit` struct that survives a
+    warm reset, and drops any `cmd=` at or below it. It exists for one failure: a response body
+    left over from an earlier round trip would run the same dose twice, and the second ack lands on
+    a row no longer `state='sent'`, so the backend's UPDATE is a silent no-op — neither the
+    cooldown nor the daily cap ever sees the second dose.
+
+    That guard is a backend obligation, and `commands.id` carrying `AUTOINCREMENT` is what keeps it
+    now that #25 lets `POST /pot/delete` take an erased pot's commands with it. Without it the
+    column is a rowid alias and SQLite hands a deleted id straight back out. #25's clause saying
+    the column has no `AUTOINCREMENT` is corrected here; the delete order that clause justifies
+    stands on reachability, which is reason enough on its own.
+
+    Two things still rewind the counter, and both fail the same silent way — the board refuses
+    every command for ever while reporting perfectly healthy. A rebuild of `commands`, of the kind
+    #23 sanctions, has to carry `sqlite_sequence` across, because `DROP TABLE` takes that row with
+    it. And restoring the database from a backup puts `max(id)` below a mark the board still holds;
+    the cure is a cold boot, which the reset button is not. So the column keeps `AUTOINCREMENT`,
+    trimming history copies rows out rather than deleting down to a lower id, and a restore is
+    paired with a power cycle of every board.

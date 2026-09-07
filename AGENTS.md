@@ -23,11 +23,15 @@ own short `AGENTS.md` with the tooling and traps specific to it.
 
 ## Where we are
 
-**2026-09-07.** Backend 0.20.0 runs on the NAS. Firmware and app carry the board's three latches
-on the wire. A readability pass is under way: docs rewritten, comments cut to what a newcomer
-needs, code and tests simplified, one repository at a time. Its spec is
-`docs/superpowers/specs/2026-09-07-ease-of-understanding-design.md`. When the pass is done,
-delete the spec and this paragraph.
+**2026-09-07.** A readability pass went through the umbrella, the firmware, the backend and the
+app. Every repository now has a README a newcomer can build from and an `AGENTS.md` of rules
+rather than diary, the words are defined once in [GLOSSARY.md](GLOSSARY.md), and the decisions
+have an index. Comments keep invariants, units, traps and reasons, and carry no dates, task
+numbers or pitch names. The backend is a package of twenty modules behind a facade; the app's
+view model is split by concern; the firmware's console takes a new command in one table row.
+
+Backend 0.20.0 runs on the NAS. Firmware and app carry the board's three latches on the wire.
+The firmware has still never run on hardware: the host tests are the only evidence it works.
 
 ## Conventions
 

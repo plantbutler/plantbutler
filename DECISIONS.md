@@ -3,6 +3,43 @@
 Architecture decisions that the plan hinges on. One entry each; a decision that changes gets a new
 dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` first.
 
+## Index
+
+An index only. The entries below stay as written; the notes column is the one place a later reversal is recorded next to the original. Number 17 was never used.
+
+| # | date | title | notes |
+| --- | --- | --- | --- |
+| 1 | 2026-08-30 | Repositories |  |
+| 2 | 2026-08-30 | Backend on the NAS, LAN-only | made real by 19 (Tailscale) |
+| 3 | 2026-08-30 | Android app, native |  |
+| 4 | 2026-08-30 | Board ↔ backend protocol |  |
+| 5 | 2026-08-30 | The backend decides, the firmware protects |  |
+| 6 | 2026-08-30 | Raw on the wire, identity and calibration in the backend | part superseded by 15, part reversed by 26 |
+| 7 | 2026-08-30 | Safety is layered and fails dry | part reversed by 10 |
+| 8 | 2026-09-02 | Hardware is OpenSCAD, parametric, printed flat |  |
+| 9 | 2026-09-02 | The manifold mechanism |  |
+| 10 | 2026-09-03 | The bench electronics use the parts in hand, and the interlock moves into firmware | reverses part of 7; part superseded by 13 |
+| 11 | 2026-09-03 | Signals go where their type belongs, not where the expansion story is tidiest |  |
+| 12 | 2026-09-03 | The float is mounted so that "allowed" is the active state |  |
+| 13 | 2026-09-03 | The bench firmware is one sketch with two seams and one door to the pump | supersedes part of 10 |
+| 14 | 2026-09-03 | The float is checked by three independent witnesses, and a refusal refuses watering only |  |
+| 15 | 2026-09-03 | The bench keeps both screens, so #6's "A4 becomes channel 5" is superseded | supersedes part of 6 |
+| 16 | 2026-09-03 | A pot is an id, not a name, and its wiring is something that happened over time | part reversed by 24 |
+| 18 | 2026-09-04 | One online care source, no ranking, and no watering number from any of it |  |
+| 19 | 2026-09-04 | The address and the token belong to the device, not to the build |  |
+| 20 | 2026-09-04 | A photograph's row is the truth; its bytes are only bytes |  |
+| 21 | 2026-09-04 | A pot's size is a measurement, and the shift it earns is the log of the volume |  |
+| 22 | 2026-09-04 | The kind of plant is a closed set, and a lookup may pre-select it | part reversed by 27 |
+| 23 | 2026-09-04 | `schema.sql` stays additive, but `CREATE TABLE IF NOT EXISTS` is not |  |
+| 24 | 2026-09-05 | A pot has a status, not a switch, and the graveyard is what unwires it | reverses part of 16 |
+| 25 | 2026-09-05 | A pot can be erased, and the command log is no longer never-pruned |  |
+| 26 | 2026-09-05 | Attribution is stamped, not derived | reverses part of 6 |
+| 27 | 2026-09-05 | Twelve plant kinds, seven soils, and free text is gone from the band engine | reverses part of 22 |
+| 28 | 2026-09-05 | The controller is an integer, and board 0 is a real board |  |
+| 29 | 2026-09-05 | The dose ceiling is one number in two places, and the backend latches on the board's word, not on an empty float | parts reversed by 30 and 31 |
+| 30 | 2026-09-06 | The tank's size is measured by the meter, and the float is judged against it, never against a clock | reverses part of 29 |
+| 31 | 2026-09-06 | The board's three latches are on the wire, and the backend latches on levels | reverses part of 29 |
+
 ## 2026-08-30
 
 1. **Repositories.** A GitHub org `plantbutler` (`plant-butler` was taken) with one repository each for `firmware` (the

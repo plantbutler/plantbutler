@@ -8,7 +8,7 @@ own short `AGENTS.md` with the tooling and traps specific to it.
 
 | question | answer |
 | --- | --- |
-| what is being built, in what order | `plan/`, one markdown record per pitch ([plan/AGENTS.md](plan/AGENTS.md)) |
+| what is being built, in what order | `plan/`: one markdown file per pitch, a pitch being one shaped piece of work. Read with `openproj`, Jacopo's planning tool ([plan/AGENTS.md](plan/AGENTS.md) says how) |
 | why it is built this way | [DECISIONS.md](DECISIONS.md), dated entries with an index, never edited in place |
 | how to build, test, run a part | that repository's `README.md` |
 | how to work in a repository | that repository's `AGENTS.md` |
@@ -26,7 +26,8 @@ own short `AGENTS.md` with the tooling and traps specific to it.
 **2026-09-07.** Backend 0.20.0 runs on the NAS. Firmware and app carry the board's three latches
 on the wire. A readability pass is under way: docs rewritten, comments cut to what a newcomer
 needs, code and tests simplified, one repository at a time. Its spec is
-`docs/superpowers/specs/2026-09-07-ease-of-understanding-design.md`; delete both when it is done.
+`docs/superpowers/specs/2026-09-07-ease-of-understanding-design.md`. When the pass is done,
+delete the spec and this paragraph.
 
 ## Conventions
 

@@ -17,7 +17,7 @@ first time it uses it; this is the place to check a meaning.
 | canary channel | Channel 15, wired to nothing, read to catch a stuck multiplexer. |
 | care source | Where a care number came from. No watering number ever comes from an outside service. |
 | cart | The carriage a servo drives along the manifold; it lifts one gate at a time. Positioned by counted screw pulses and a home sensor. |
-| channel | One sensor input on a board, reported as `chN=` raw counts. Channels 200 and up carry status, not soil. |
+| channel | One sensor input on a board, reported as `chN=` raw counts. A few high numbers (204, 207, 210, 211) carry board status, not soil. |
 | contradiction (contra) | The float says the tank has water but the meter counted nothing during a dose. The board stops itself. |
 | contra latch | The board's own stop after a contradiction, cleared only by typing `clear contra` at its console. |
 | controller | See board. |
@@ -47,7 +47,9 @@ first time it uses it; this is the place to check a meaning.
 | NAS | Network-attached storage: the Synology box at home that runs the backend container. |
 | noinit | The few bytes of board memory that survive a warm reset, holding the latches and a checksum. |
 | ntfy | A public push-notification service. The backend posts alerts to a topic; the topic name is the secret. |
+| openproj | Jacopo's command-line tool that reads the plan: checks it, schedules it. Lives outside these repositories. |
 | outlet | One numbered water exit on the manifold, 1 to 5. Commands name an outlet, not a pot. |
+| pitch | One shaped piece of work in the plan: problem, appetite, rough solution, a few sentences each. |
 | PlatformIO | The build tool for the firmware; `platformio.ini` defines each build. |
 | pos | Where the cart is: `pos=ok` or `pos=unknown`. Unknown blocks watering. |
 | pot | One plant: its name, calibration and target band. A pot outlives its wiring. |

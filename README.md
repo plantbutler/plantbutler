@@ -4,7 +4,7 @@ A hobby system that waters house plants. Three parts:
 
 - **Board** (`firmware`): an Arduino UNO R4 WiFi with one soil-moisture sensor per pot, a pump, and
   a manifold that sends the water to one pot at a time. It reports readings and waters on command.
-- **Backend** (`backend`): a small Python service in Docker on a Synology NAS (a network-attached
+- **Backend** (`backend`): a small Python service in a Docker container on a Synology NAS (a network-attached
   storage box, the home server). It stores the readings, decides when to water, and sends alerts.
 - **App** (`app`): an Android app to look at the plants, edit them, and water by hand.
 
@@ -15,15 +15,20 @@ way they are) and [GLOSSARY.md](GLOSSARY.md) (what the words mean).
 ## How the parts talk
 
 ```
- sensors, float,        ARDUINO UNO R4 WIFI               SYNOLOGY NAS                ANDROID PHONE
- meter, pump,  <---->   firmware                          backend (Docker)            app
- manifold                  |                                  |                          |
-                           |  POST /report  c=0 ch0=8123 ... |                          |
-                           | -------------------------------> |                          |
-                           |  next=60  [+ at most 1 command]  |   HTTP, same token       |
-                           | <------------------------------- | <----------------------> |
-                                                              |
-                                                          ntfy.sh (alerts to the phone)
+ sensors, float switch,      BOARD                     BACKEND                   APP
+ flow meter, pump,  <---->   Arduino UNO R4 WiFi       Docker on the NAS         Android phone
+ manifold                    (firmware)                (backend)                 (app)
+                                 |                         |                        |
+                                 |  POST /report           |                        |
+                                 |  c=0 ch0=8123 ch1=7902  |                        |
+                                 | ----------------------> |                        |
+                                 |  next=60 [+ 1 command]  |                        |
+                                 | <---------------------- |                        |
+                                 |                         |  HTTP, same token      |
+                                 |                         | <--------------------> |
+                                 |                         |                        |
+                                 |                         v                        |
+                                 |                    ntfy.sh, alerts -----------> |
 ```
 
 The board talks first. Every report interval it posts one line of `key=value` pairs (called
@@ -60,7 +65,7 @@ submodule, commit the new pin here too, or the umbrella describes a state nobody
 | repository | what it is | state |
 | --- | --- | --- |
 | [firmware](firmware/) | PlatformIO project for the board, C++ | bench-tested on the real rig |
-| [backend](backend/) | Python service, SQLite, one container | 0.20.0 running on the NAS |
+| [backend](backend/) | Python service, SQLite (a single-file database), one container | 0.20.0 running on the NAS |
 | [app](app/) | Android, Kotlin and Jetpack Compose | installed on the phone |
 | [cad](cad/) | OpenSCAD parts, wiring drawings, parts list | in progress |
 | [plan](plan/) | what is being built and in what order | see its README |

@@ -1,15 +1,15 @@
 [submodule "plan"]
 	path = plan
-	url = git@github.com:plantbutler/plan.git
+	url = https://github.com/plantbutler/plan.git
 [submodule "backend"]
 	path = backend
-	url = git@github.com:plantbutler/backend.git
+	url = https://github.com/plantbutler/backend.git
 [submodule "app"]
 	path = app
-	url = git@github.com:plantbutler/app.git
+	url = https://github.com/plantbutler/app.git
 [submodule "cad"]
 	path = cad
-	url = git@github.com:plantbutler/cad.git
+	url = https://github.com/plantbutler/cad.git
 [submodule "firmware"]
 	path = firmware
-	url = git@github.com:plantbutler/firmware.git
+	url = https://github.com/plantbutler/firmware.git

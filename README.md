@@ -64,7 +64,7 @@ submodule, commit the new pin here too, or the umbrella describes a state nobody
 
 | repository | what it is | state |
 | --- | --- | --- |
-| [firmware](firmware/) | PlatformIO project for the board, C++ | bench-tested on the real rig |
+| [firmware](firmware/) | PlatformIO project for the board, C++ | written and tested on the host; no board has run it yet |
 | [backend](backend/) | Python service, SQLite (a single-file database), one container | 0.20.0 running on the NAS |
 | [app](app/) | Android, Kotlin and Jetpack Compose | installed on the phone |
 | [cad](cad/) | OpenSCAD parts, wiring drawings, parts list | in progress |

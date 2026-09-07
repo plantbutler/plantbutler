@@ -50,6 +50,7 @@ delete the spec and this paragraph.
 
 - A file starts with one line saying what it holds.
 - A comment says why, not what. Keep invariants, units, hardware traps, security reasons.
-- No dates, task numbers, PR numbers, pitch names, decision numbers, reviewer names or history.
-  Keep the fact, drop the provenance.
+- No dates, task numbers, PR numbers, pitch names, reviewer names or history. Keep the fact,
+  drop the provenance. This is about code comments: a document may of course point at a
+  decision by number, which is what the index is for.
 - Docs are short and carry commands. Define a term on first use; the glossary is the reference.

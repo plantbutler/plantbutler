@@ -14,6 +14,7 @@ first time it uses it; this is the place to check a meaning.
 | backend latch | The backend's mirror of a board latch: no rule waters and commands are refused until a person resumes. |
 | band | A pot's target moisture range, a low and a high percentage. The rules water below the low end. |
 | board | One Arduino running the pump, sensors and manifold. Also called controller; `c=` in every report. Board 0 is a real board. |
+| calibration | Holding a pot's sensor in the air and then in water, so its dry and wet readings are known and a percentage means something. |
 | canary channel | Channel 15, wired to nothing, read to catch a stuck multiplexer. |
 | care source | Where a care number came from. No watering number ever comes from an outside service. |
 | cart | The carriage a servo drives along the manifold; it lifts one gate at a time. Positioned by counted screw pulses and a home sensor. |
@@ -66,6 +67,7 @@ first time it uses it; this is the place to check a meaning.
 | submodule | A pinned commit of another git repository, checked out inside this one. |
 | tailnet | A private network between your own devices, made with Tailscale. The phone reaches the NAS through it. |
 | tank | The water store one board pumps from. Its size is learned from full-to-empty runs. |
+| target band | See band. |
 | ticker | The backend's one periodic job, every minute: evaluate the alert rules from stored state. |
 | Trefle | An outside service asked about a scientific name. It knows light and humidity, never watering. |
 | uv | The Python tool that installs the backend's dependencies and runs its tests and server. |

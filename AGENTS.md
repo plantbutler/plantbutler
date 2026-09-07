@@ -1,231 +1,56 @@
 # Working on Plant Butler
 
-Read this first, whichever repository you landed in. It is the org-wide guide; each repository has
-its own short `AGENTS.md` for the tooling and state that are specific to it.
-
-Plant Butler is a hobby plant-watering system: an Arduino UNO R4 WiFi with one capacitive
-soil-moisture sensor per pot and a pump feeding a lead-screw manifold (a servo moves a magnet cart that lifts one gate at a time); a small Python
-backend on a Synology NAS that stores readings and decides when to water; an Android app to look
-at the plants and water them by hand. Two workers: Jacopo (`jcanton`) and Claude (`claude`), a day
-a week between them. Everything is deliberately small.
+Read this first, whichever repository you landed in. [README.md](README.md) says what the system
+is and how its parts talk; [GLOSSARY.md](GLOSSARY.md) defines the words. Each repository has its
+own short `AGENTS.md` with the tooling and traps specific to it.
 
 ## Where the truth lives
 
-| question                          | answer                                                                 |
-| --------------------------------- | ---------------------------------------------------------------------- |
-| what is being built, and in what order | `plan/` — the Shape Up plan, one markdown record per pitch ([plan/AGENTS.md](plan/AGENTS.md)) |
-| why it is built this way          | [DECISIONS.md](DECISIONS.md) — dated entries, never edited in place    |
-| how to work in a given repository | that repository's `AGENTS.md`                                          |
-| what is bet right now             | `plan/cycles/0001.md` and the pitches with `status: ready`             |
-
-The repositories, all under the GitHub org `plantbutler` and pinned here as submodules:
-
-| repo       | what it is                                                        | state on 2026-08-30 |
-| ---------- | ----------------------------------------------------------------- | ------------------- |
-| `firmware` | PlatformIO / UNO R4 WiFi; the former `jcanton/plant_butler`       | prototype: reads A0-A3 onto two screens, cycles the manifold at boot |
-| `backend`  | one Python container + SQLite on the NAS                          | README only         |
-| `app`      | Kotlin + Jetpack Compose                                          | README only         |
-| `cad`      | OpenSCAD, KiCad, BOM, bench notes                                 | README only         |
-| `plan`     | the openproj plan                                                 | 16 pitches, cycle 1 bet |
-
-Locally the umbrella is `~/projects/plant-butler/` with the submodules checked out inside it; the
-firmware also has an older standalone checkout at `~/projects/plant_butler/` pointing at the same
-remote. The tool that reads the plan is `openproj`, Jacopo's own, at `~/projects/openproj/`.
+| question | answer |
+| --- | --- |
+| what is being built, in what order | `plan/`: one markdown file per pitch, a pitch being one shaped piece of work. Read with `openproj`, Jacopo's planning tool ([plan/AGENTS.md](plan/AGENTS.md) says how) |
+| why it is built this way | [DECISIONS.md](DECISIONS.md), dated entries with an index, never edited in place |
+| how to build, test, run a part | that repository's `README.md` |
+| how to work in a repository | that repository's `AGENTS.md` |
 
 ## Picking it up after a pause
 
-1. Read [DECISIONS.md](DECISIONS.md). Ten minutes, and it stops you re-deciding things.
-2. `cd plan && openproj check . && openproj schedule .` — what is bet, what waits on what, what
-   is late. See `plan/AGENTS.md` for how to run `openproj`.
-3. Find the pitch that is `in_progress`, or the first `ready` one whose dependencies are done.
-   Its body says what done looks like. Open that repository and read its `AGENTS.md`.
-4. When you stop: update the pitch (status, `## Progress` if it has one), commit in the
-   repository you worked in, then update the submodule pointer here. Update the **Where we are**
-   section below if the picture changed.
+1. Read the index in [DECISIONS.md](DECISIONS.md) and any entry you do not remember.
+2. `cd plan && openproj check . && openproj schedule .` to see what is bet and what is late.
+3. Take the pitch that is `in_progress`, or the first `ready` one whose dependencies are done.
+4. When you stop: update the pitch, commit in the repository you worked in, then commit the new
+   submodule pointer here. Update **Where we are** below if the picture changed.
 
 ## Where we are
 
-**2026-09-05, later.** The controller is an integer now, 0..255, across all three repositories —
-`c=` was the last free-text identifier on the wire and the one a typo could turn into a second
-garden. Board 0 is a real board and is falsy, which is decision 28's whole point: four `if not
-controller` checks in the backend would have refused the commonest board there is. The firmware
-moved with it, and the session working on the bench sketch caught the one thing no compiler could
-— `test_cli.cpp` hardcoded `"bench1"` independently of the macro, so it would have kept passing
-while asserting a shape that can no longer exist. That change is `plantbutler/firmware#1`, open
-against `bench-sketch` rather than main, because all 104 of that branch's commits touch the same
-files.
-
-The garden list also shows each pot's newest photograph beside its name. Backend 0.17.0 is
-deployed; its database was recreated again, because `CREATE TABLE IF NOT EXISTS` cannot retype a
-column and TEXT affinity would have answered the app a string where it now expects a number.
-
-**2026-09-05.** A plant can die, and until today the app had no way to say so. The only lever was
-an `enabled` switch that turned the proposals off and left the pot wired — its mapping window
-stayed open, so a hose it was not using still belonged to it, and reusing that outlet meant typing
-over the dead plant's row and inheriting its name, its photographs and its watering log.
-
-`pots.enabled` is now `pots.status`, `alive` or `graveyard`, read through a positive allow-list
-everywhere. Burying a pot closes its mapping window — which is what actually frees the channel and
-the outlet — expires its proposals, and drops the `sensor:` alert that nothing else could ever
-clear once the pot left the loop that raises it. Restoring leaves it unwired. `POST /pot/delete`
-is the other half and keeps nothing: the pot, its wiring, its readings, its doses and their
-verdicts, its dismissed advice and its photographs with their files. In the app the first is a
-long press on a garden row and the second is a button at the foot of the form behind a dialog that
-names the plant and lists what goes.
-
-The bigger change is underneath. `readings` and `commands` now carry `pot_id`, stamped as the row
-lands from the window in force, and the chart asks `GET /history?pot=`. Before this a new plant on
-a dead one's socket opened its chart onto the dead one's moisture curve, because a reading knew
-only which channel it came from. That is a reversal of half of decision 6 — percentages stay
-derived, attribution no longer is — and decisions 24 to 27 say what it cost.
-
-Kind of plant went from six values to twelve and soil became a closed set of the seven that move
-the band, both refused on write and both dropdowns in the app; `_find` and its three keyword rules
-are deleted. Backend 0.16.0, 427 tests; app 310. The live database was recreated rather than
-migrated, which is also what finally removed the fake Legos pot.
-
-**2026-09-04, later still.** The pot form was next, and it turned out to hide a defect rather than
-just read badly. `plant_type` was free text keyword-matched against eight words while being the
-only thing that picks the base moisture band, so `plant_type=basil` looked saved, matched nothing,
-and left the pot on the unlabelled 35-55 with nothing on screen to say so. `pot_size` was matched
-on the words *small* and *large* alone, so `14cm` — the README's own example — and the `"3"` in
-the live garden moved the band by nothing; `plant_size` was read by nothing at all.
-
-So: an ⓘ beside every field opening one sentence, a closed set of six plant kinds plus *not sure*,
-and the two sizes as measurements the band reads as a water buffer and the demand on it — the
-shift being linear in the *log* of the volume, since a 40 cm pot holds 23x a 14 cm one. A species
-lookup now pre-selects the kind from GBIF's family, into an empty field only, which is the first
-time a species has reached a watering number at all. Decisions 21-23; pitch "The form says what it
-means"; backend#21, app#14, plan#16. **The backend is 0.15.0 on the NAS**, and the migration was
-its own proof: `add_columns()` carried the live garden's `"10"` and `"3"` across, and that pot's
-offer went from `flower` to `flower, 3 cm pot, 10 cm plant`.
-
-**2026-09-04, later.** Both queued ideas are built, merged, deployed and driven on the phone, and
-both pitches are `done`: "Where is the butler?" (backend#17, app#12) and "A picture of the plant,
-over time" (backend#19, app#13), with the deploy in backend#20. Decisions 19 and 20 record what
-they settled. **The backend is 0.14.0 on the NAS.** The real garden is still empty — the hardware
-is out of reach — so the photographs were driven against a laptop backend the phone was pointed at
-through the new setup screen, which tested the repointing as a side effect.
-
-What the phone proved that no test could. The three sentences told the three mistakes apart
-against real services: a wrong token on the NAS, a dead port, and the NAS's own web UI on 5000.
-A camera round trip came back 1200x1600 and upright at 306 KB — the EXIF rotation is the one that
-had to be right, because re-encoding drops the tag and there is no editing here to fix it with
-afterwards. The species break appeared only where the species actually changed. And moving the
-phone to the laptop and back never showed one butler's garden under the other's name.
-
-Three reviewers went over the four PRs and found twelve defects between them, all fixed before
-merging. The two worth remembering: a photograph whose id collided with an existing one overwrote
-that picture's bytes before the INSERT could object, leaving a committed row pointing at nothing
-(ids are claimed with O_EXCL now); and the setup screen could print the token it was refusing,
-because OkHttp quotes an illegal header value back in its exception message and that message went
-straight onto the screen. Three of the twelve were comments that lied about the code, and two of
-those had a real bug sitting behind them.
-
-The app no longer has the address or the token compiled into it: it asks on first start, proves
-both with a real `GET /hello`, and keeps them in the phone's encrypted store, so one APK installs
-on a second phone and a moved NAS is a typed line. `butler.properties` is now optional and only
-prefills that screen for a development build. `GET /hello` had to exist because nothing else could
-tell a wrong address from a wrong token — which are different mistakes and only one of them is the
-user's to fix.
-
-A pot also keeps its own photographs now: a strip under the chart, oldest first, with the care
-source's picture of the species beside them as the reference. The bytes live under `BUTLER_PHOTOS`
-next to the database and the row is the truth, which is what decides the direction a crash or a
-half-restored backup fails in. The phone caps the long edge at 1600 before it uploads, and turns
-the picture upright from EXIF first — a phone writes the sensor's orientation into a tag rather
-than into the pixels, and re-encoding drops it, so without that every portrait photograph would
-have come back on its side for good.
-
-What is untested is exactly what only a device has: the camera, and a first start with nothing
-stored. Both wait for adb.
-
-**2026-09-04.** The second pass is finished. "What does this plant want?" was the last of its
-pitches and it is done: backend 0.12.0 on the NAS, the app on the phone, and decision 18 recording
-what it settled. `GET /species` resolves what somebody typed through GBIF and asks Trefle about the
-accepted binomial; both hops are cached, so the garden screen never touches the network. GBIF knows
-scientific names only, so "basil", "basilico", "tomatoe" and "peace lily" fall to Trefle's own
-search, which matches common names, survives a typo, and answers with photographs — and the
-photograph is what confirms the plant, because "peace lily" is two species and no spelling settles
-which one is on the windowsill.
-
-No watering number comes from any of it. Trefle carries no watering regime (`soil_humidity` NULL
-for every species probed), so the target band is proposed locally from plant type, soil, pot size
-and month, and it arrives as an offer with Apply and Not now. Applying it is an ordinary pot edit.
-
-Driven on the phone against a laptop backend with a fake board: `basilico` returned eight
-photographs, tapping Basil filled the field and re-resolved to *Ocimum basilicum* with light 7/10
-and humidity 5/10, the saved species read its care back out of the cache with no second call,
-Apply wrote 35-50% and the offer went quiet, and Not now silenced monstera's until a repot made it
-a different offer (35-55%, "tropical, large pot").
-
-Two ideas were queued and not bet at that point: photographs of your own plants filed under the
-pot id, and asking where the backend is on first start instead of compiling it into the APK. Both
-were built later the same day — see the entry above.
-
-The hardware is still out of reach, so the two firmware pitches wait.
-
-
-**2026-09-03.** Cycle 1's four backend pitches and the three app pitches are done and deployed;
-the backend is 0.8.0 on the NAS, the app is a debug APK on the phone. A second pass on the app is
-underway under two new projects, "App, second pass" and "The butler knows the plant". Two of its
-six pitches are done. "A pot has an identity": a pot is now a `pot-xxxxxx` id rather than its name, its
-wiring lives in `pot_mappings` with a validity window, and it carries a `species` — see decision
-16. "The watering history": `GET /doses` and a screen for it, backend 0.9.0. That one also turned
-up a defect older than itself — disabling a pot never closed its mapping window, so two pots could
-hold one hose and a dose could belong to both, which had been quietly corrupting cooldown and
-daily-cap attribution. Fixed in the mapping write. "Look further back": day, week and month chips
-on the chart with a scrub, plus paging on the history. And "A create is not an edit", a pitch made
-on the spot: an id-less `POST /pot` used to edit whatever pot already had that name, so a new pot
-made against a stale list could silently overwrite one. The backend is 0.11.0 and deployed.
-
-The app has been driven on the phone once, against a laptop backend with a fake board: a pot
-created, renamed, watered, and read back in both histories. The rename is what the identity pitch
-was for — three days ago the app could not do it at all.
-
-"Something to look at off the tailnet" and "Three samples, not one" are done too, so five of the
-six second-pass pitches are, plus the one made on the spot.
-
-All five were then driven on the phone (2026-09-04) against a laptop backend and a fake board: the
-chart's day/week/month chips and its scrub, the watering history paging on its cursor, the offline
-cache cold-started with the backend killed, and the calibration wizard's three-sample capture with
-its arm-and-restore. Two things only showed up on hardware and were fixed there.
-
-The sixth, "What does this plant want?", is unblocked and reshaped. Probed with real keys on
-2026-09-04: **Perenual's free tier is names only** — every care field is an upgrade string and the
-detail endpoints answer 429 — and **Trefle answers with light, humidity and pH but has no watering
-regime at all** (`soil_humidity` empty across every species sampled, and houseplants empty or
-absent entirely). OpenFarm's API is gone; GBIF does the taxonomy hop free. Jacopo's call: Perenual
-is out, no ranking and no fallback chain, Trefle is the one online source and otherwise the numbers
-are typed in. The watering band was never going to come from a care API and now says so.
-
-The hardware is still out of reach until about mid-September, so the two firmware pitches wait.
-
-**2026-08-30.** The org, the five repositories (plus `.github`), the decisions, the plan and an
-`AGENTS.md` in every repo exist; no product code has been written beyond the firmware prototype.
-Cycle 1 (2026-08-31 → review 2026-10-12) is software only because the hardware is out of reach
-until about mid-September. "Org, repos, decisions, shopping list" is `in_progress` with one item
-left — order the bench parts; the platform is pinned and the old Gmail app password is revoked
-and gone. Jacopo then
-holds "Readings up the wire"; Claude holds "Readings land on the NAS" and "Command hand-off".
-Starting either backend pitch needs access to the NAS (Container Manager or SSH); starting the
-firmware pitch needs the board on USB.
+**2026-09-07.** Backend 0.20.0 runs on the NAS. Firmware and app carry the board's three latches
+on the wire. A readability pass is under way: docs rewritten, comments cut to what a newcomer
+needs, code and tests simplified, one repository at a time. Its spec is
+`docs/superpowers/specs/2026-09-07-ease-of-understanding-design.md`. When the pass is done,
+delete the spec and this paragraph.
 
 ## Conventions
 
-- **Shape Up, fat-marker.** A pitch body is a few sentences per heading. Detail goes in the
-  repository the pitch is about, once it is bet. Do not add tasks, schemas or class designs to
-  the plan.
-- **Decisions are appended, not edited.** A changed decision is a new dated entry in
-  `DECISIONS.md`. An idea that might overturn one goes into `plan/notes/` first.
-- **One record, one commit; check before push.** `openproj check .` must report no blockers
-  before a plan commit is pushed. Never write a derived date into a record.
-- **Secrets never enter a repository.** `firmware/include/secrets.h` is gitignored; the backend's
-  token and the app's server URL live in untracked local files or environment. Nothing in this
-  system is ever port-forwarded on the synology.me host.
-- **Failure direction is dry.** Any change to firmware or backend keeps the invariants in
-  DECISIONS.md #5 and #7.
-- **Names.** Record ids are random; refer to records by title in prose. The org is `plantbutler`
-  (`plant-butler` was taken); the local directory is still `plant-butler`.
-- **Submodules.** After pushing in a subrepository, `git add <subrepo>` here and push the pointer,
-  or the umbrella describes a state nobody can clone.
+- **Fat-marker plan.** A pitch is a few sentences per heading. Detail goes in the repository the
+  pitch is about, once it is bet. No tasks, schemas or class designs in the plan.
+- **Decisions are appended, not edited.** A changed decision is a new dated entry. An idea that
+  might overturn one goes into `plan/notes/` first.
+- **One record, one commit.** `openproj check .` reports no blockers before a plan commit is
+  pushed. Never write a derived date into a record.
+- **Secrets never enter a repository.** WiFi credentials, the token and the NAS address live in
+  gitignored files or the environment. Nothing is ever port-forwarded on the NAS.
+- **Failure direction is dry.** Any change to firmware or backend keeps decisions 5 and 7: when
+  in doubt, no water.
+- **Submodules.** After pushing in a subrepository, `git add <subrepo>` here and push the
+  pointer, or the umbrella describes a state nobody can clone.
+- **Other sessions edit these repositories at the same time.** One worktree per topic, one PR
+  per repository, rebase before merging.
+
+## Comments and docs
+
+- A file starts with one line saying what it holds.
+- A comment says why, not what. Keep invariants, units, hardware traps, security reasons.
+- No dates, task numbers, PR numbers, pitch names, reviewer names or history. Keep the fact,
+  drop the provenance. This is about code comments: a document may of course point at a
+  decision by number, which is what the index is for.
+- Docs are short and carry commands. Define a term on first use; the glossary is the reference.

@@ -5,7 +5,7 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
 
 ## Index
 
-An index only. The entries below stay as written; the notes column is the one place a later reversal is recorded next to the original. Number 17 was never used.
+An index only. The entries below stay as written; the notes column is the one place a later reversal is recorded next to the original. Number 17 is reserved for a decision open in another branch.
 
 | # | date | title | notes |
 | --- | --- | --- | --- |

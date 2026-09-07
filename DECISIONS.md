@@ -489,3 +489,19 @@ dated entry, not an edit. Ideas that might overturn one go into `plan/notes/` fi
     `float=` and `flow_ml=`, which is #5 kept. Manual water from the phone is still not gated: a
     human is at the phone, the board's own float check runs, and the no-flow abort is beneath
     both.
+
+31. **The board's three latches are on the wire, and the backend latches on levels.** `ch207`
+    carried the contradiction latch; `ch210` now carries the flap (three consecutive float
+    refusals, cleared only by a granted dose) and `ch211` the dry latch (a reset with a dose in
+    flight, cleared only by `dry off`). Before this the backend latched a reset board on
+    `err=resetmid` *changing*, and the token does not change again until a dose ends, so a
+    second reset before that never latched and the rules queued water the board refused, paged
+    high once per cooldown, for ever. A level is read on every report and needs no edge. The flap
+    was worse than invisible: the board's word is `float=0` while it stands, the backend refused
+    on that, the rules never granted the dose that clears it, and the only way out was a person
+    watering from the phone — a page told them so. Now the backend can see the flap, its page says
+    "the board's float check tripped, refill and tap", and a tap made after the flap tripped lets
+    the rules try one dose: the board's own float check runs at dose time and either clears the
+    flap or refuses again. The tap is the human saying full; the board re-checks. Nothing about
+    the tank's counter or samples changes. Changed now because no board runs this firmware yet:
+    after bring-up a wire change costs a reflash and a compatibility story.

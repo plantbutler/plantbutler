@@ -46,8 +46,8 @@ doubt, no water.
    section "Deploy".
 3. **Board.** Put your WiFi and the token in `secrets.h`, build and flash:
    [firmware](firmware/README.md), section "Build and flash".
-4. **App.** Build the APK (the Android install file), install it on the phone, and type the
-   backend address and token on first start: [app](app/README.md), section "Install".
+4. **App.** Build the app file, install it on the phone, and type the backend address and token
+   on first start: [app](app/README.md), section "Build and install".
 
 ## Get started as a developer
 
